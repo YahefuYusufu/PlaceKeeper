@@ -58,7 +58,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-
+    
     //google map
     implementation(libs.maps.compose)
     implementation(libs.play.services.maps)
