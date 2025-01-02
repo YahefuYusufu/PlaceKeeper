@@ -49,5 +49,6 @@ fun TrackingScreen() {
                 mapType = newType
             }
         )
+
     }
 }
