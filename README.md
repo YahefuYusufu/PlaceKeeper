@@ -1,19 +1,57 @@
-TrackWise  
-A modern Android location tracking application built with Jetpack Compose that allows users to track their movement and visualize their journey in real-time. The app features background location tracking, route visualization, and detailed movement analytics.
-Key Features
+# PlaceKeeper 🗺️
 
-Real-time location tracking with Google Maps integration
-Background tracking capability with foreground service
-Custom map styles (Light/Dark mode)
-Distance and time tracking
-Route visualization with polylines
-Permission handling for location access
+A modern Android application that helps users save and organize their favorite locations with custom categories and detailed information. Built with Jetpack Compose and Google Maps integration.
 
-Tech Stack
+## Features 🌟
 
-Kotlin
-Jetpack Compose
-Google Maps SDK
-Location Services
-Foreground Services
-Clean Architecture
+### Map Features
+- Interactive Google Maps integration
+- Multiple map types (Normal, Satellite, Terrain)
+- Custom map styles (Light/Dark themes)
+- Custom markers for different categories
+
+### Location Management
+- Save favorite locations with custom details
+- Organize places into categories
+- Add personal notes and ratings
+- Custom marker colors for different categories
+
+### Organization
+- Filter places by category
+- Search through saved locations
+- List and map view options
+- Easy category management
+
+## Tech Stack 🛠️
+
+- 100% Kotlin
+- Jetpack Compose
+- Material 3 Design
+- Google Maps SDK
+- Room Database
+- MVVM Architecture
+- Clean Architecture principles
+
+## Architecture 🏗️
+
+The app follows Clean Architecture with MVVM pattern:
+- Presentation Layer (Compose UI, ViewModels)
+- Domain Layer (Use Cases, Models)
+- Data Layer (Repository, Local Database)
+
+## Screenshots 📱
+
+[Coming soon]
+
+## Getting Started 🚀
+
+### Prerequisites
+- Android Studio Hedgehog or later
+- Minimum SDK 24
+- Google Maps API key
+
+### Setup
+1. Clone the repository
+2. Add your Google Maps API key to local.properties:
+   ```properties
+   MAPS_API_KEY=your_api_key_here
