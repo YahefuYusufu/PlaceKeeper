@@ -23,45 +23,42 @@ fun HomeScreen() {
         position = CameraPosition.fromLatLngZoom(defaultLocation, 12f)
     }
 
-    Scaffold { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+    Box(modifier = Modifier.fillMaxSize()) {
+        GoogleMap(
+            modifier = Modifier.fillMaxSize(),
+            cameraPositionState = cameraPositionState,
+            properties = MapProperties(
+                mapType = mapType,
+                isMyLocationEnabled = false,  // We'll enable this later with permissions
+                mapStyleOptions = MapStyles.getMapStyleOptions()
+            ),
+            uiSettings = MapUiSettings(
+                zoomControlsEnabled = true,  // Hide default zoom controls
+                mapToolbarEnabled = true,    // Hide default toolbar
+                myLocationButtonEnabled = true, // Hide default location button
+                compassEnabled = true
+            )
         ) {
-            GoogleMap(
-                modifier = Modifier.fillMaxSize(),
-                cameraPositionState = cameraPositionState,
-                properties = MapProperties(
-                    mapType = mapType,
-                    mapStyleOptions = MapStyles.getMapStyleOptions()
-                ),
-                uiSettings = MapUiSettings(
-                    zoomControlsEnabled = true,
-                    compassEnabled = true
-                )
-            ) {
-                Marker(
-                    state = MarkerState(position = defaultLocation),
-                    title = "Default Location",
-                    onClick = {
-                        showBottomSheet = true
-                        true
-                    }
-                )
-            }
-
-            MapTypeSelector(
-                modifier = Modifier
-                    .align(androidx.compose.ui.Alignment.BottomStart)
-                    .padding(16.dp),
-                onMapTypeSelect = { newType ->
-                    mapType = newType
+            Marker(
+                state = MarkerState(position = defaultLocation),
+                title = "Default Location",
+                onClick = {
+                    showBottomSheet = true
+                    true
                 }
             )
         }
 
-        // Bottom Sheet
+        // Map controls in better position
+        MapTypeSelector(
+            modifier = Modifier
+                .align(androidx.compose.ui.Alignment.BottomStart)
+                .padding(bottom = 32.dp, start = 16.dp),
+            onMapTypeSelect = { newType ->
+                mapType = newType
+            }
+        )
+
         if (showBottomSheet) {
             ModalBottomSheet(
                 onDismissRequest = { showBottomSheet = false },
@@ -81,7 +78,6 @@ fun HomeScreen() {
                         text = "Add details about this location",
                         style = MaterialTheme.typography.bodyMedium
                     )
-                    // Add more content as needed
                     Spacer(modifier = Modifier.height(32.dp))
                 }
             }

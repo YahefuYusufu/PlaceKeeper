@@ -25,7 +25,7 @@
             android:value="@string/API_KEY" />
 
         <activity
-            android:name=".presentation.MainActivity"
+            android:name="com.example.placeKeeper.presentation.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.PlaceKeeper">
             <intent-filter>
