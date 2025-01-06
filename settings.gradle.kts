@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "MyTracker"
+rootProject.name = "PlaceKeeper"
 include(":app")
