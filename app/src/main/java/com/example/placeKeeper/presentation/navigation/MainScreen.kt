@@ -1,5 +1,6 @@
 package com.example.placeKeeper.presentation.navigation
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -36,8 +37,9 @@ fun MainScreen() {
     Scaffold(
         bottomBar = {
             NavigationBar(
-                containerColor = MaterialTheme.colorScheme.surface,
-                tonalElevation = 4.dp
+                modifier = Modifier.height(90.dp),  // Added height modifier to make it smaller
+                containerColor = MaterialTheme.colorScheme.surfaceVariant,  // Changed background color
+                tonalElevation = 2.dp  // Reduced elevation for a more subtle shadow
             ) {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
@@ -48,13 +50,13 @@ fun MainScreen() {
                             Icon(
                                 imageVector = item.icon,
                                 contentDescription = item.title,
-                                modifier = Modifier.size(26.dp)
+                                modifier = Modifier.size(28.dp)  // Made icons slightly smaller
                             )
                         },
                         label = {
                             Text(
                                 text = item.title,
-                                style = MaterialTheme.typography.labelSmall,
+                                style = MaterialTheme.typography.bodySmall,
                                 fontWeight = if (currentRoute == item.route)
                                     FontWeight.Bold else FontWeight.Normal
                             )
