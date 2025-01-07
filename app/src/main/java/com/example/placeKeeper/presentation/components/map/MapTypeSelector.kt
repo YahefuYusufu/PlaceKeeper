@@ -41,13 +41,13 @@ fun MapTypeSelector(
                     spotColor = Color.Black.copy(alpha = 0.25f)
                 )
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
+                .background(MaterialTheme.colorScheme.primary)
                 .padding(4.dp)
         ) {
             Icon(
                 imageVector = Icons.Default.Layers,
                 contentDescription = "Change map type",
-                tint = MaterialTheme.colorScheme.primary
+                tint = MaterialTheme.colorScheme.primaryContainer
             )
         }
 

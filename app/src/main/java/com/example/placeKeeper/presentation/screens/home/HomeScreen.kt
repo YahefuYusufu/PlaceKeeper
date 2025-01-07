@@ -29,13 +29,13 @@ fun HomeScreen() {
             cameraPositionState = cameraPositionState,
             properties = MapProperties(
                 mapType = mapType,
-                isMyLocationEnabled = false,  // We'll enable this later with permissions
+                isMyLocationEnabled = false,
                 mapStyleOptions = MapStyles.getMapStyleOptions()
             ),
             uiSettings = MapUiSettings(
-                zoomControlsEnabled = true,  // Hide default zoom controls
-                mapToolbarEnabled = true,    // Hide default toolbar
-                myLocationButtonEnabled = true, // Hide default location button
+                zoomControlsEnabled = true,
+                mapToolbarEnabled = true,
+                myLocationButtonEnabled = true,
                 compassEnabled = true
             )
         ) {
