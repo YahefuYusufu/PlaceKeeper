@@ -1,5 +1,6 @@
 package com.example.placeKeeper.presentation.navigation
 
+import CategoriesScreen
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,7 +20,6 @@ import androidx.navigation.compose.*
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.placeKeeper.presentation.screens.categories.CategoriesScreen
 import com.example.placeKeeper.presentation.screens.home.HomeScreen
 import com.example.placeKeeper.presentation.screens.places.PlacesListScreen
 import com.example.placeKeeper.utils.NavigationUtils.navigateToTab
@@ -84,7 +84,10 @@ fun MainScreen() {
                 HomeScreen()
             }
             composable(route = NavigationItem.Categories.route) {
-                CategoriesScreen()
+                CategoriesScreen(
+                    navigateToAddCategory = {},
+                    navigateToPlaces = {}
+                )
             }
             composable(route = NavigationItem.PlacesList.route) {
                 PlacesListScreen()
