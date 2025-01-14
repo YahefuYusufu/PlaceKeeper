@@ -2,6 +2,7 @@ package com.example.placeKeeper.data
 
 import android.content.Context
 import androidx.room.Database
+import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.placeKeeper.data.dao.CategoryDao
 import com.example.placeKeeper.data.dao.PlaceDao
