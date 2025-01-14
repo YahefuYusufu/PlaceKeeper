@@ -14,20 +14,20 @@ import com.example.placeKeeper.data.entities.PlaceEntity
     version = 1,
     exportSchema = false
 )
-abstract class LocationDatabase : RoomDatabase() {
-    abstract fun savedLocationDao(): PlaceDao
+abstract class PlaceDatabase : RoomDatabase() {
+    abstract fun placeDao(): PlaceDao
     abstract fun categoryDao(): CategoryDao
 
     companion object {
         @Volatile
-        private var INSTANCE: LocationDatabase? = null
+        private var INSTANCE: PlaceDatabase? = null
 
-        fun getDatabase(context: Context): LocationDatabase {
+        fun getDatabase(context: Context): PlaceDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    LocationDatabase::class.java,
-                    "location_database"
+                    PlaceDatabase::class.java,
+                    "place_database"
                 ).build()
                 INSTANCE = instance
                 instance

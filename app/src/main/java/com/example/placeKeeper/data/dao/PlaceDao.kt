@@ -12,23 +12,23 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PlaceDao {
     @Query("SELECT * FROM place")
-    fun getAllLocations(): Flow<List<PlaceEntity>>
+    fun getAllPlaces(): Flow<List<PlaceEntity>>
 
     @Query("SELECT * FROM place WHERE category_id = :categoryId")
-    fun getLocationsByCategory(categoryId: Long): Flow<List<PlaceEntity>>
+    fun getPlacesByCategory(categoryId: Long): Flow<List<PlaceEntity>>
 
-    @Query("SELECT * FROM place WHERE id = :locationId")
-    suspend fun getLocationById(locationId: Long): PlaceEntity?
+    @Query("SELECT * FROM place WHERE id = :placeId")
+    suspend fun getPlaceById(placeId: Long): PlaceEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertLocation(location: PlaceEntity): Long
+    suspend fun insertPlace(place: PlaceEntity): Long
 
     @Update
-    suspend fun updateLocation(location: PlaceEntity)
+    suspend fun updatePlace(place: PlaceEntity)
 
     @Delete
-    suspend fun deleteLocation(location: PlaceEntity)
+    suspend fun deletePlace(place: PlaceEntity)
 
     @Query("SELECT * FROM place WHERE name LIKE '%' || :query || '%'")
-    fun searchLocations(query: String): Flow<List<PlaceEntity>>
+    fun searchPlaces(query: String): Flow<List<PlaceEntity>>
 }

@@ -1,6 +1,7 @@
+package com.example.placeKeeper.data.mappers
+
 import com.example.placeKeeper.data.entities.CategoryEntity
 import com.example.placeKeeper.domain.model.Category
-
 
 fun CategoryEntity.toCategory(): Category {
     return Category(

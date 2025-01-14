@@ -1,3 +1,5 @@
+package com.example.placeKeeper.data.mappers
+
 import com.example.placeKeeper.data.entities.PlaceEntity
 import com.example.placeKeeper.domain.model.Place
 

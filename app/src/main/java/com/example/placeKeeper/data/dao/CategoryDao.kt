@@ -9,6 +9,8 @@ import androidx.room.Update
 import com.example.placeKeeper.data.entities.CategoryEntity
 import kotlinx.coroutines.flow.Flow
 
+
+
 @Dao
 interface CategoryDao {
     @Query("SELECT * FROM categories")
