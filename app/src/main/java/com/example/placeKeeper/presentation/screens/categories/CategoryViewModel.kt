@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -20,17 +21,20 @@ class CategoryViewModel @Inject constructor(
     private val repository: CategoryRepository
 ) : ViewModel() {
 
-    private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error
-
     private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error.asStateFlow()
+
+
+    // Get all categories as a StateFlow
     val categories: StateFlow<List<Category>> = repository
         .getAllCategories()
         .catch { e ->
-            Log.e("CategoryViewModel", "Error fetching categories", e)
             _error.value = e.message
+            Log.e("CategoryViewModel", "Error fetching categories", e)
+            emit((emptyList()))
         }
         .stateIn(
             scope = viewModelScope,
@@ -38,32 +42,29 @@ class CategoryViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
-    init {
-        Log.d("CategoryViewModel", "ViewModel initialized")
-    }
-
-    fun addCategory(category: Category) {
+    // Delete category with error handling
+    fun deleteCategory(category: Category) {
         viewModelScope.launch {
             try {
                 _isLoading.value = true
-                repository.insertCategory(category)
+                repository.deleteCategory(category)
             } catch (e: Exception) {
-                Log.e("CategoryViewModel", "Error adding category", e)
                 _error.value = e.message
+                Log.e("CategoryViewModel", "Error deleting category", e)
             } finally {
                 _isLoading.value = false
             }
         }
     }
 
-    fun deleteCategory(category: Category) {
-        viewModelScope.launch {
-            try {
-                repository.deleteCategory(category)
-            } catch (e: Exception) {
-                Log.e("CategoryViewModel", "Error deleting category", e)
-                _error.value = e.message
-            }
-        }
+
+    // Clear error state
+    fun clearError() {
+        _error.value = null
     }
+
+    init {
+        Log.d("CategoryViewModel", "ViewModel initialized")
+    }
+
 }
