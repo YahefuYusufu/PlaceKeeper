@@ -137,11 +137,7 @@ fun MainScreen() {
                     onNavigateBack = {
                         navController.popBackStack()
                     },
-                    onSaveCategory = { name, color, iconName ->
-                        // For now, just navigate back
-                        // Later we'll implement actual saving through ViewModel
-                        navController.popBackStack()
-                    }
+
                 )
             }
         }

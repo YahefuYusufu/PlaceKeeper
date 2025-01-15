@@ -1,26 +1,27 @@
 
 package com.example.placeKeeper.presentation.screens.categories
 
-
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.input.ImeAction
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.placeKeeper.utils.CategoryConstants
 import com.example.placeKeeper.utils.ColorOption
 import com.example.placeKeeper.utils.IconOption
@@ -29,16 +30,28 @@ import com.example.placeKeeper.utils.IconOption
 @Composable
 fun AddCategoryScreen(
     onNavigateBack: () -> Unit,
-    onSaveCategory: (String, String, String) -> Unit
+    viewModel: AddCategoryViewModel = hiltViewModel()
 ) {
     var categoryName by remember { mutableStateOf("") }
     var selectedColor by remember { mutableStateOf(CategoryConstants.AVAILABLE_COLORS[0].hex) }
     var selectedIcon by remember { mutableStateOf(CategoryConstants.AVAILABLE_ICONS[0].iconName) }
     var showNameError by remember { mutableStateOf(false) }
 
-    val isFormValid = remember(categoryName) {
-        categoryName.length in 3..30
+    val uiState by viewModel.uiState.collectAsState()
+
+    // Handle UI state changes
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is AddCategoryUiState.Success -> {
+                onNavigateBack()
+            }
+            is AddCategoryUiState.Error -> {
+                showNameError = true
+            }
+            else -> { /* no-op */ }
+        }
     }
+
 
     Scaffold(
         topBar = {
@@ -55,30 +68,30 @@ fun AddCategoryScreen(
                 actions = {
                     TextButton(
                         onClick = {
-                            if (isFormValid) {
-                                onSaveCategory(categoryName, selectedColor, selectedIcon)
-                                onNavigateBack()
-                            } else {
-                                showNameError = true
-                            }
+                            viewModel.addCategory(
+                                name = categoryName,
+                                color = selectedColor,
+                                iconName = selectedIcon
+                            )
                         },
-                        enabled = categoryName.isNotBlank()
+                        enabled = categoryName.isNotBlank() &&
+                                uiState !is AddCategoryUiState.Loading
                     ) {
                         Text("Save")
                     }
                 }
             )
         }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Category Name Input
-            Column {
+    ) { padding ->
+        Box(modifier = Modifier.padding(padding)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Category Name Input
                 OutlinedTextField(
                     value = categoryName,
                     onValueChange = {
@@ -87,83 +100,95 @@ fun AddCategoryScreen(
                     },
                     label = { Text("Category Name") },
                     modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        imeAction = ImeAction.Done
-                    ),
-                    singleLine = true,
                     isError = showNameError,
                     supportingText = if (showNameError) {
                         { Text("Name must be between 3 and 30 characters") }
-                    } else null
+                    } else {
+                        { Text("${categoryName.length}/30") }
+                    },
+                    singleLine = true
                 )
+
+                // Color Selection
                 Text(
-                    text = "${categoryName.length}/30",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.align(Alignment.End)
+                    "Select Color",
+                    style = MaterialTheme.typography.titleMedium
                 )
-            }
-
-            // Color Selection
-            Text(
-                text = "Select Color",
-                style = MaterialTheme.typography.titleMedium
-            )
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                items(CategoryConstants.AVAILABLE_COLORS) { colorOption ->
-                    ColorButton(
-                        colorOption = colorOption,
-                        isSelected = colorOption.hex == selectedColor,
-                        onClick = { selectedColor = colorOption.hex }
-                    )
-                }
-            }
-
-            // Icon Selection
-            Text(
-                text = "Select Icon",
-                style = MaterialTheme.typography.titleMedium
-            )
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(5),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.height(200.dp)
-            ) {
-                items(CategoryConstants.AVAILABLE_ICONS) { iconOption ->
-                    IconSelectionButton(
-                        iconOption = iconOption,
-                        isSelected = iconOption.iconName == selectedIcon,
-                        onClick = { selectedIcon = iconOption.iconName }
-                    )
-                }
-            }
-
-            // Preview
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(
-                        "Preview",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    CategoryPreview(
-                        name = categoryName.ifEmpty { "Category Name" },
-                        color = selectedColor,
-                        icon = CategoryConstants.AVAILABLE_ICONS.find { it.iconName == selectedIcon }?.imageVector
-                            ?: Icons.Default.Place
-                    )
+                    items(CategoryConstants.AVAILABLE_COLORS) { colorOption ->
+                        ColorButton(
+                            colorOption = colorOption,
+                            isSelected = colorOption.hex == selectedColor,
+                            onClick = { selectedColor = colorOption.hex }
+                        )
+                    }
                 }
+
+                // Icon Selection
+                Text(
+                    "Select Icon",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(5),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.height(200.dp)
+                ) {
+                    items(CategoryConstants.AVAILABLE_ICONS) { iconOption ->
+                        IconButton(
+                            onClick = { selectedIcon = iconOption.iconName },
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .border(
+                                    width = 1.dp,
+                                    color = if (selectedIcon == iconOption.iconName)
+                                        MaterialTheme.colorScheme.primary
+                                    else MaterialTheme.colorScheme.outline,
+                                    shape = MaterialTheme.shapes.small
+                                )
+                        ) {
+                            Icon(
+                                imageVector = iconOption.imageVector,
+                                contentDescription = iconOption.displayName,
+                                tint = if (selectedIcon == iconOption.iconName)
+                                    MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+                }
+
+                // Preview
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            "Preview",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        CategoryPreview(
+                            name = categoryName.ifEmpty { "Category Name" },
+                            color = selectedColor,
+                            icon = CategoryConstants.AVAILABLE_ICONS.find {
+                                it.iconName == selectedIcon
+                            }?.imageVector ?: Icons.Default.Place
+                        )
+                    }
+                }
+            }
+
+            // Loading Indicator
+            if (uiState is AddCategoryUiState.Loading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
         }
     }
