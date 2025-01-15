@@ -1,5 +1,6 @@
 package com.example.placeKeeper.presentation.navigation
 
+import android.util.Log
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -90,16 +91,24 @@ fun MainScreen() {
             composable(route = NavigationItem.Categories.route) {
                 CategoriesScreen(
                     navigateToAddCategory = {
-                        // Navigate to add category screen
-                        navController.navigate("add_category")
+                        Log.d("Navigation", "Attempting to navigate to add category")
+                        try {
+                            navController.navigate("add_category")
+                        } catch (e: Exception) {
+                            Log.e("Navigation", "Navigation failed", e)
+                        }
                     },
                     navigateToPlaces = { categoryId ->
-                             // Navigate to places screen with category ID
+                        Log.d("Navigation", "Attempting to navigate to places with id: $categoryId")
+                        try {
                             navController.navigate("places/$categoryId")
-
+                        } catch (e: Exception) {
+                            Log.e("Navigation", "Navigation failed", e)
+                        }
                     }
                 )
             }
+
             composable(route = NavigationItem.PlacesList.route) {
                 PlacesListScreen()
             }
