@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.placeKeeper.domain.model.Category
+import com.example.placeKeeper.utils.CategoryConstants
 
 
 @Composable
@@ -59,8 +60,11 @@ fun CategoryCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            val iconVector = CategoryConstants.AVAILABLE_ICONS
+                .find { it.iconName == category.iconName }
+                ?.imageVector ?: Icons.Default.Place
             Icon(
-                imageVector = Icons.Rounded.Place, // You can map iconName to actual icons later
+                imageVector = iconVector,
                 contentDescription = null,
                 modifier = Modifier.size(48.dp),
                 tint = iconTint

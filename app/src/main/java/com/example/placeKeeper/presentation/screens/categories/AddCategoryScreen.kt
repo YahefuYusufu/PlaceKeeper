@@ -45,10 +45,13 @@ fun AddCategoryScreen(
             is AddCategoryUiState.Success -> {
                 onNavigateBack()
             }
+
             is AddCategoryUiState.Error -> {
                 showNameError = true
             }
-            else -> { /* no-op */ }
+
+            else -> { /* no-op */
+            }
         }
     }
 
@@ -173,22 +176,40 @@ fun AddCategoryScreen(
                             style = MaterialTheme.typography.titleMedium
                         )
                         Spacer(modifier = Modifier.height(8.dp))
-                        CategoryPreview(
-                            name = categoryName.ifEmpty { "Category Name" },
-                            color = selectedColor,
-                            icon = CategoryConstants.AVAILABLE_ICONS.find {
-                                it.iconName == selectedIcon
-                            }?.imageVector ?: Icons.Default.Place
-                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // Get the selected icon from AVAILABLE_ICONS
+                            val selectedIconVector = CategoryConstants.AVAILABLE_ICONS
+                                .find { it.iconName == selectedIcon }
+                                ?.imageVector ?: Icons.Default.Place
+
+                            val defaultColor = MaterialTheme.colorScheme.primary
+                            val iconTint = remember(selectedColor) {
+                                try {
+                                    Color(android.graphics.Color.parseColor(selectedColor))
+                                } catch (e: IllegalArgumentException) {
+                                    defaultColor
+                                }
+                            }
+
+                            Icon(
+                                imageVector = selectedIconVector,
+                                contentDescription = null,
+                                tint = iconTint,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = categoryName.ifEmpty { "Category Name" },
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        }
                     }
                 }
-            }
-
-            // Loading Indicator
-            if (uiState is AddCategoryUiState.Loading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
             }
         }
     }

@@ -52,6 +52,12 @@ object CategoryConstants {
         IconOption(Icons.Default.FitnessCenter, "fitness", "Fitness"),
         IconOption(Icons.Default.LocalHospital, "hospital", "Healthcare")
     )
+
+    fun getIconForName(iconName: String): ImageVector {
+        return AVAILABLE_ICONS.find { it.iconName == iconName }?.imageVector
+            ?: Icons.Default.Place
+    }
+
 }
 
 data class ColorOption(
