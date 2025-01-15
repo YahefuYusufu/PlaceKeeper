@@ -21,9 +21,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.placeKeeper.presentation.screens.categories.AddCategoryScreen
 import com.example.placeKeeper.presentation.screens.categories.CategoriesScreen
 import com.example.placeKeeper.presentation.screens.home.HomeScreen
 import com.example.placeKeeper.presentation.screens.places.PlacesListScreen
+import com.example.placeKeeper.presentation.screens.places.PlacesScreen
 import com.example.placeKeeper.utils.NavigationUtils.navigateToTab
 
 
@@ -103,19 +105,35 @@ fun MainScreen() {
             }
 
             // Add these new routes
-            composable(route = "add_category") {
-                // TODO: Create and implement AddCategoryScreen
-                // For now, we can use a placeholder
-                Text("Add Category Screen")
-            }
             composable(
                 route = "places/{categoryId}",
-                arguments = listOf(navArgument("categoryId") { type = NavType.LongType })
+                arguments = listOf(
+                    navArgument("categoryId") { type = NavType.LongType }
+                )
             ) { backStackEntry ->
                 val categoryId = backStackEntry.arguments?.getLong("categoryId") ?: return@composable
-                // TODO: Create and implement PlacesScreen
-                // For now, we can use a placeholder
-                Text("Places for category $categoryId")
+                PlacesScreen(
+                    categoryId = categoryId,
+                    onNavigateBack = {
+                        navController.popBackStack()
+                    },
+                    onAddPlace = { id ->
+                        // We'll implement this later
+                        // navController.navigate("add_place/$id")
+                    }
+                )
+            }
+            composable(route = "add_category") {
+                AddCategoryScreen(
+                    onNavigateBack = {
+                        navController.popBackStack()
+                    },
+                    onSaveCategory = { name, color, iconName ->
+                        // For now, just navigate back
+                        // Later we'll implement actual saving through ViewModel
+                        navController.popBackStack()
+                    }
+                )
             }
         }
     }
