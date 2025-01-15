@@ -1,6 +1,5 @@
 package com.example.placeKeeper.presentation.navigation
 
-import CategoriesScreen
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,10 +15,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.placeKeeper.presentation.screens.categories.CategoriesScreen
 import com.example.placeKeeper.presentation.screens.home.HomeScreen
 import com.example.placeKeeper.presentation.screens.places.PlacesListScreen
 import com.example.placeKeeper.utils.NavigationUtils.navigateToTab
@@ -37,9 +39,9 @@ fun MainScreen() {
     Scaffold(
         bottomBar = {
             NavigationBar(
-                modifier = Modifier.height(90.dp),  // Added height modifier to make it smaller
-                containerColor = MaterialTheme.colorScheme.surfaceVariant,  // Changed background color
-                tonalElevation = 2.dp  // Reduced elevation for a more subtle shadow
+                modifier = Modifier.height(90.dp),
+                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                tonalElevation = 2.dp
             ) {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
@@ -50,7 +52,7 @@ fun MainScreen() {
                             Icon(
                                 imageVector = item.icon,
                                 contentDescription = item.title,
-                                modifier = Modifier.size(28.dp)  // Made icons slightly smaller
+                                modifier = Modifier.size(28.dp)
                             )
                         },
                         label = {
@@ -85,12 +87,35 @@ fun MainScreen() {
             }
             composable(route = NavigationItem.Categories.route) {
                 CategoriesScreen(
-                    navigateToAddCategory = {},
-                    navigateToPlaces = {}
+                    navigateToAddCategory = {
+                        // Navigate to add category screen
+                        navController.navigate("add_category")
+                    },
+                    navigateToPlaces = { categoryId ->
+                             // Navigate to places screen with category ID
+                            navController.navigate("places/$categoryId")
+
+                    }
                 )
             }
             composable(route = NavigationItem.PlacesList.route) {
                 PlacesListScreen()
+            }
+
+            // Add these new routes
+            composable(route = "add_category") {
+                // TODO: Create and implement AddCategoryScreen
+                // For now, we can use a placeholder
+                Text("Add Category Screen")
+            }
+            composable(
+                route = "places/{categoryId}",
+                arguments = listOf(navArgument("categoryId") { type = NavType.LongType })
+            ) { backStackEntry ->
+                val categoryId = backStackEntry.arguments?.getLong("categoryId") ?: return@composable
+                // TODO: Create and implement PlacesScreen
+                // For now, we can use a placeholder
+                Text("Places for category $categoryId")
             }
         }
     }
