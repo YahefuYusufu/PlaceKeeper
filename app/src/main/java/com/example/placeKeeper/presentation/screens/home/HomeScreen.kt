@@ -50,7 +50,7 @@ fun HomeScreen() {
                 mapStyleOptions = MapStyles.getMapStyleOptions()
             ),
             uiSettings = MapUiSettings(
-                zoomControlsEnabled = false, // We'll add custom controls
+                zoomControlsEnabled = false,
                 mapToolbarEnabled = false,
                 myLocationButtonEnabled = false,
                 compassEnabled = true
@@ -113,31 +113,47 @@ fun HomeScreen() {
         // Map Controls Card
         Surface(
             modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(top = 88.dp, end = 16.dp),
+                .align(Alignment.BottomEnd)
+                .padding(bottom = 15.dp, end = 16.dp),
             shape = RoundedCornerShape(12.dp),
             color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
             tonalElevation = 4.dp
         ) {
             Column(
-                modifier = Modifier.padding(4.dp)
+                modifier = Modifier
+                    .width(48.dp) // Fixed width for the control panel
+                    .padding(4.dp)
             ) {
-                IconButton(onClick = {
-                    cameraPositionState.position = CameraPosition.fromLatLngZoom(
-                        cameraPositionState.position.target,
-                        cameraPositionState.position.zoom + 1f
+                IconButton(
+                    onClick = {
+                        cameraPositionState.position = CameraPosition.fromLatLngZoom(
+                            cameraPositionState.position.target,
+                            cameraPositionState.position.zoom + 1f
+                        )
+                    },
+                    modifier = Modifier.size(40.dp) // Fixed size for the button
+                ) {
+                    Icon(
+                        Icons.Rounded.Add,
+                        "Zoom in",
+                        modifier = Modifier.size(24.dp) // Fixed size for the icon
                     )
-                }) {
-                    Icon(Icons.Rounded.Add, "Zoom in")
                 }
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
-                IconButton(onClick = {
-                    cameraPositionState.position = CameraPosition.fromLatLngZoom(
-                        cameraPositionState.position.target,
-                        cameraPositionState.position.zoom - 1f
+                IconButton(
+                    onClick = {
+                        cameraPositionState.position = CameraPosition.fromLatLngZoom(
+                            cameraPositionState.position.target,
+                            cameraPositionState.position.zoom - 1f
+                        )
+                    },
+                    modifier = Modifier.size(40.dp) // Fixed size for the button
+                ) {
+                    Icon(
+                        Icons.Rounded.Remove,
+                        "Zoom out",
+                        modifier = Modifier.size(24.dp) // Fixed size for the icon
                     )
-                }) {
-                    Icon(Icons.Rounded.Remove, "Zoom out")
                 }
             }
         }
@@ -146,7 +162,7 @@ fun HomeScreen() {
         MapTypeSelector(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(bottom = 100.dp, start = 16.dp)
+                .padding(bottom =  40.dp, start = 16.dp)
                 .shadow(elevation = 4.dp, shape = RoundedCornerShape(12.dp)),
             onMapTypeSelect = { newType -> mapType = newType }
         )
@@ -155,8 +171,8 @@ fun HomeScreen() {
         FloatingActionButton(
             onClick = { /* Handle my location */ },
             modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(bottom = 100.dp, end = 16.dp),
+                .align(Alignment.TopEnd)
+                .padding(top = 88.dp, end = 16.dp),
             containerColor = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.primary
         ) {
