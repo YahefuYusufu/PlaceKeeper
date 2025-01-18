@@ -3,7 +3,8 @@ package com.example.placeKeeper.presentation.navigation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.ui.graphics.vector.ImageVector
 
 
@@ -12,19 +13,24 @@ sealed class NavigationItem (
     val title: String,
     val icon: ImageVector
 ) {
-    object Home: NavigationItem(
+    data object Home: NavigationItem(
         route = "home",
         title = "Map",
-        icon = Icons.Default.Map
+        icon = Icons.Default.Place
     )
-    object Categories : NavigationItem(
+    data object Categories : NavigationItem(
         route = "categories",
         title = "Categories",
         icon = Icons.Default.Category
     )
-    object PlacesList : NavigationItem(
+    data object PlacesList : NavigationItem(
         route = "places_list",
         title = "Places",
         icon = Icons.AutoMirrored.Filled.List
+    )
+    data object Saved: NavigationItem(
+        route = "saved",
+        title = "Saved",
+        icon = Icons.Default.Favorite
     )
 }
