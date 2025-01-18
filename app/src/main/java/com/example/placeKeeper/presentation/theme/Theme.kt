@@ -20,8 +20,9 @@ private val DarkColorScheme = darkColorScheme(
     onSecondary = TextPrimary,
     onTertiary = TextPrimary,
     onBackground = TextPrimary,
-    onSurface = TextPrimary,
+    onSurface = SuccessGreen,
     onError = TextPrimary,
+
 )
 
 private val LightColorScheme = darkColorScheme(  // Notice we're using darkColorScheme even for light theme
@@ -35,8 +36,9 @@ private val LightColorScheme = darkColorScheme(  // Notice we're using darkColor
     onSecondary = TextPrimary,
     onTertiary = TextPrimary,
     onBackground = TextPrimary,
-    onSurface = TextPrimary,
+    onSurface = SuccessGreen,
     onError = TextPrimary,
+
 )
 
 @Composable

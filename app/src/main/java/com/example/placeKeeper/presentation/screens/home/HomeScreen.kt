@@ -114,7 +114,7 @@ fun HomeScreen() {
         Surface(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(bottom = 15.dp, end = 16.dp),
+                .padding(bottom = 75.dp, end = 16.dp),
             shape = RoundedCornerShape(12.dp),
             color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
             tonalElevation = 4.dp
@@ -162,7 +162,7 @@ fun HomeScreen() {
         MapTypeSelector(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(bottom =  40.dp, start = 16.dp)
+                .padding(bottom =  88.dp, start = 16.dp)
                 .shadow(elevation = 4.dp, shape = RoundedCornerShape(12.dp)),
             onMapTypeSelect = { newType -> mapType = newType }
         )
