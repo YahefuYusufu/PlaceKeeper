@@ -27,6 +27,7 @@ import com.example.placeKeeper.presentation.screens.categories.CategoriesScreen
 import com.example.placeKeeper.presentation.screens.home.HomeScreen
 import com.example.placeKeeper.presentation.screens.places.PlacesListScreen
 import com.example.placeKeeper.presentation.screens.places.PlacesScreen
+import com.example.placeKeeper.presentation.screens.savedPlaces.SavedScreen
 import com.example.placeKeeper.utils.NavigationUtils.navigateToTab
 
 
@@ -36,7 +37,8 @@ fun MainScreen() {
     val items = listOf(
         NavigationItem.Home,
         NavigationItem.Categories,
-        NavigationItem.PlacesList
+        NavigationItem.PlacesList,
+        NavigationItem.Saved
     )
 
     Scaffold(
@@ -109,8 +111,14 @@ fun MainScreen() {
                 )
             }
 
+            //Place List
             composable(route = NavigationItem.PlacesList.route) {
                 PlacesListScreen()
+            }
+
+            //SavedScreen
+            composable(route = NavigationItem.Saved.route) {
+                SavedScreen()  // You'll need to create this screen
             }
 
             // Add these new routes
@@ -126,7 +134,8 @@ fun MainScreen() {
                     onNavigateBack = {
                         navController.popBackStack()
                     },
-                    onAddPlace = { id ->
+                    onAddPlace = {
+
                         // We'll implement this later
                         // navController.navigate("add_place/$id")
                     }
