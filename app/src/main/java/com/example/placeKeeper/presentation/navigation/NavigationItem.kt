@@ -4,7 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.ui.graphics.vector.ImageVector
 
 
@@ -16,7 +16,7 @@ sealed class NavigationItem (
     data object Home: NavigationItem(
         route = "home",
         title = "Map",
-        icon = Icons.Default.Place
+        icon = Icons.Default.Home
     )
     data object Categories : NavigationItem(
         route = "categories",
