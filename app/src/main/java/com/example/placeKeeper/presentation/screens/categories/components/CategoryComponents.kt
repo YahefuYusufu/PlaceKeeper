@@ -18,6 +18,7 @@ import com.example.placeKeeper.domain.model.Category
 fun CategoryGrid(
     modifier: Modifier = Modifier,
     onCategoryClick: (Long) -> Unit,
+    onDeleteClick: (Category) -> Unit,
     categories: List<Category>
 ) {
 
@@ -32,7 +33,8 @@ fun CategoryGrid(
         items(categories) { category ->
             CategoryCard(
                 category = category,
-                onClick = { onCategoryClick(category.id) }
+                onClick = { onCategoryClick(category.id) },
+                onDeleteClick = { onDeleteClick(category) }
             )
         }
     }
@@ -42,7 +44,7 @@ fun CategoryGrid(
 fun CategoryList(
     modifier: Modifier = Modifier,
     onCategoryClick: (Long) -> Unit,
-
+    onDeleteClick: (Category) -> Unit,
     categories: List<Category>
 ) {
 
@@ -55,7 +57,9 @@ fun CategoryList(
         items(categories) { category ->
             CategoryListItem(
                 category = category,
-                onClick = { onCategoryClick(category.id) }
+                onClick = { onCategoryClick(category.id) },
+                onDeleteClick = { onDeleteClick(category) }
+
             )
         }
     }

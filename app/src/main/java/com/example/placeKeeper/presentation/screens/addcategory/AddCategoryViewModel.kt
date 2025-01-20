@@ -1,4 +1,4 @@
-package com.example.placeKeeper.presentation.screens.categories
+package com.example.placeKeeper.presentation.screens.addcategory
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

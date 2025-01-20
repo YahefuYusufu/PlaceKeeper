@@ -7,11 +7,12 @@ import com.example.placeKeeper.domain.model.Category
 import com.example.placeKeeper.domain.repository.CategoryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,50 +22,72 @@ class CategoryViewModel @Inject constructor(
     private val repository: CategoryRepository
 ) : ViewModel() {
 
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+    private val _uiState = MutableStateFlow(CategoryUiState())
+    val uiState = _uiState.asStateFlow()
 
-    private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error.asStateFlow()
+    init {
+        Log.d("CategoryViewModel", "ViewModel initialized")
+        loadCategories()
+    }
+
+    private fun loadCategories() {
+        repository.getAllCategories()
+            .onStart {
+                _uiState.update { it.copy(isLoading = true) }
+            }
+            .catch { e ->
+                Log.e("CategoryViewModel", "Error fetching categories", e)
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message
+                    )
+                }
+            }
+            .onEach { categories ->
+                _uiState.update {
+                    it.copy(
+                        categories = categories,
+                        isLoading = false,
+                        error = null
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
+    }
 
 
-    // Get all categories as a StateFlow
-    val categories: StateFlow<List<Category>> = repository
-        .getAllCategories()
-        .catch { e ->
-            _error.value = e.message
-            Log.e("CategoryViewModel", "Error fetching categories", e)
-            emit((emptyList()))
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+    fun showDeleteConfirmation(category: Category) {
+        _uiState.update { it.copy(categoryToDelete = category) }
+    }
 
-    // Delete category with error handling
-    fun deleteCategory(category: Category) {
+    fun dismissDeleteConfirmation() {
+        _uiState.update { it.copy(categoryToDelete = null) }
+    }
+
+    fun deleteCategory() {
+        val categoryToDelete = _uiState.value.categoryToDelete ?: return
         viewModelScope.launch {
             try {
-                _isLoading.value = true
-                repository.deleteCategory(category)
+                _uiState.update { it.copy(isLoading = true) }
+                repository.deleteCategory(categoryToDelete)
+                _uiState.update { it.copy(categoryToDelete = null) }
             } catch (e: Exception) {
-                _error.value = e.message
+                _uiState.update { it.copy(error = e.message) }
                 Log.e("CategoryViewModel", "Error deleting category", e)
             } finally {
-                _isLoading.value = false
+                _uiState.update { it.copy(isLoading = false) }
             }
         }
     }
 
+    fun toggleViewMode() {
+        _uiState.update { it.copy(isGridView = !it.isGridView) }
+    }
 
-    // Clear error state
     fun clearError() {
-        _error.value = null
+        _uiState.update { it.copy(error = null) }
     }
 
-    init {
-        Log.d("CategoryViewModel", "ViewModel initialized")
-    }
 
 }

@@ -1,5 +1,5 @@
 
-package com.example.placeKeeper.presentation.screens.categories
+package com.example.placeKeeper.presentation.screens.addcategory
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border

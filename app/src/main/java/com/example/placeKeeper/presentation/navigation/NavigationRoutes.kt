@@ -6,7 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.placeKeeper.presentation.screens.addplace.AddPlaceScreen
-import com.example.placeKeeper.presentation.screens.categories.AddCategoryScreen
+import com.example.placeKeeper.presentation.screens.addcategory.AddCategoryScreen
 import com.example.placeKeeper.presentation.screens.categories.CategoriesScreen
 import com.example.placeKeeper.presentation.screens.home.HomeScreen
 import com.example.placeKeeper.presentation.screens.places.PlacesListScreen
