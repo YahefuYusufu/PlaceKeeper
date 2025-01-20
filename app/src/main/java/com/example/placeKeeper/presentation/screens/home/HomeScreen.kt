@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.example.placeKeeper.presentation.components.map.MapTypeSelector
 import com.example.placeKeeper.presentation.theme.MapStyles
@@ -33,7 +34,7 @@ fun HomeScreen() {
     var showBottomSheet by remember { mutableStateOf(false) }
     var mapType by remember { mutableStateOf(MapType.NORMAL) }
     var searchQuery by remember { mutableStateOf("") }
-    val defaultLocation = LatLng(-33.8688, 151.2093) // Sydney
+    val defaultLocation = LatLng(-33.8688, 151.2093)
 
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(defaultLocation, 12f)
@@ -74,7 +75,7 @@ fun HomeScreen() {
                 .height(56.dp)
                 .align(Alignment.TopCenter),
             shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
+            color = MaterialTheme.colorScheme.primary,
             tonalElevation = 6.dp,
             shadowElevation = 8.dp
         ) {
@@ -85,12 +86,13 @@ fun HomeScreen() {
                 Icon(
                     imageVector = Icons.Rounded.Search,
                     contentDescription = "Search",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = MaterialTheme.colorScheme.primaryContainer
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 BasicTextField(
                     value = searchQuery,
                     onValueChange = { searchQuery = it },
+                    textStyle = TextStyle(MaterialTheme.colorScheme.primaryContainer),
                     modifier = Modifier.weight(1f),
                     decorationBox = { innerTextField ->
                         Box(
@@ -100,7 +102,8 @@ fun HomeScreen() {
                             if (searchQuery.isEmpty()) {
                                 Text(
                                     "Search places...",
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = MaterialTheme.colorScheme.primaryContainer,
+
                                 )
                             }
                             innerTextField()
@@ -116,12 +119,12 @@ fun HomeScreen() {
                 .align(Alignment.BottomEnd)
                 .padding(bottom = 75.dp, end = 16.dp),
             shape = RoundedCornerShape(12.dp),
-            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
+            color = MaterialTheme.colorScheme.primary,
             tonalElevation = 4.dp
         ) {
             Column(
                 modifier = Modifier
-                    .width(48.dp) // Fixed width for the control panel
+                    .width(48.dp)
                     .padding(4.dp)
             ) {
                 IconButton(
@@ -131,12 +134,12 @@ fun HomeScreen() {
                             cameraPositionState.position.zoom + 1f
                         )
                     },
-                    modifier = Modifier.size(40.dp) // Fixed size for the button
+                    modifier = Modifier.size(40.dp)
                 ) {
                     Icon(
                         Icons.Rounded.Add,
                         "Zoom in",
-                        modifier = Modifier.size(24.dp) // Fixed size for the icon
+                        modifier = Modifier.size(24.dp)
                     )
                 }
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
@@ -147,12 +150,12 @@ fun HomeScreen() {
                             cameraPositionState.position.zoom - 1f
                         )
                     },
-                    modifier = Modifier.size(40.dp) // Fixed size for the button
+                    modifier = Modifier.size(40.dp)
                 ) {
                     Icon(
                         Icons.Rounded.Remove,
                         "Zoom out",
-                        modifier = Modifier.size(24.dp) // Fixed size for the icon
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             }
@@ -173,8 +176,9 @@ fun HomeScreen() {
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(top = 88.dp, end = 16.dp),
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.primary
+            containerColor = MaterialTheme.colorScheme.
+            primary,
+            contentColor = MaterialTheme.colorScheme.primaryContainer
         ) {
             Icon(Icons.Rounded.MyLocation, "My Location")
         }

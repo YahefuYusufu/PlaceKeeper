@@ -19,8 +19,8 @@ fun AddPlaceButton(
 ) {
     FloatingActionButton(
         onClick = onClick,
-        containerColor = MaterialTheme.colorScheme.primary,
-        contentColor = MaterialTheme.colorScheme.onPrimary,
+        containerColor = MaterialTheme.colorScheme.inversePrimary,
+        contentColor = MaterialTheme.colorScheme.primary,
         modifier = modifier
             .size(64.dp)
             .shadow(
@@ -33,7 +33,8 @@ fun AddPlaceButton(
         Icon(
             imageVector = Icons.Default.Add,
             contentDescription = "Add",
-            modifier = Modifier.size(24.dp)
+
+            modifier = Modifier.size(28.dp)
         )
     }
 }

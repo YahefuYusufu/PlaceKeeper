@@ -58,46 +58,7 @@ fun CategoriesScreen(
     val error by viewModel.error.collectAsState()
 
 
-    // Mock data
-//    val mockCategories = remember {
-//        listOf(
-//            Category(
-//                id = 1L,
-//                name = "Restaurants",
-//                color = "#FF4081",
-//                iconName = "restaurant",
-//                createdAt = System.currentTimeMillis()
-//            ),
-//            Category(
-//                id = 2L,
-//                name = "Parks",
-//                color = "#00C853",
-//                iconName = "park",
-//                createdAt = System.currentTimeMillis()
-//            ),
-//            Category(
-//                id = 3L,
-//                name = "Museums",
-//                color = "#FF6E40",
-//                iconName = "museum",
-//                createdAt = System.currentTimeMillis()
-//            ),
-//            Category(
-//                id = 4L,
-//                name = "Cafes",
-//                color = "#6200EA",
-//                iconName = "cafe",
-//                createdAt = System.currentTimeMillis()
-//            ),
-//            Category(
-//                id = 5L,
-//                name = "Shopping",
-//                color = "#2962FF",
-//                iconName = "shopping",
-//                createdAt = System.currentTimeMillis()
-//            )
-//        )
-//    }
+
     LaunchedEffect(Unit) {
         Log.d("CategoriesScreen", "Screen launched")
     }
@@ -118,7 +79,10 @@ fun CategoriesScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = navigateToAddCategory) {
+            FloatingActionButton(
+                onClick = navigateToAddCategory,
+                modifier = Modifier.padding(bottom = 32.dp)
+                ) {
                 Icon(Icons.Default.Add, "Add Category")
             }
         }

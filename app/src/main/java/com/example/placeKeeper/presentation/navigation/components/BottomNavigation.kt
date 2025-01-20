@@ -27,7 +27,7 @@ fun PlaceKeeperBottomNavigation(
             .fillMaxWidth()
             .height(90.dp)
             .padding(bottom = 4.dp)
-            .background(MaterialTheme.colorScheme.surfaceVariant),
+            .background(MaterialTheme.colorScheme.primary),
 
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
@@ -75,8 +75,8 @@ private fun NavItem(
             contentDescription = item.title,
             modifier = Modifier.size(28.dp),
             tint = if (selected)
-                MaterialTheme.colorScheme.primary
-            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                MaterialTheme.colorScheme.primaryContainer
+            else MaterialTheme.colorScheme.onSecondaryContainer
         )
 
         Text(
@@ -84,7 +84,7 @@ private fun NavItem(
             style = MaterialTheme.typography.bodySmall,
             fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
             color = if (selected)
-                MaterialTheme.colorScheme.primary
+                MaterialTheme.colorScheme.primaryContainer
             else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
     }

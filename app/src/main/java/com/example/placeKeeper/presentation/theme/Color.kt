@@ -3,7 +3,7 @@ package com.example.placeKeeper.presentation.theme
 import androidx.compose.ui.graphics.Color
 
 // Primary colors
-val Primary = Color(0xFF2C3E50)
+val Primary = Color(0x333498DB)
 val PrimaryVariant = Color(0xFF1A252F)
 val Secondary = Color(0xFF3498DB)
 
