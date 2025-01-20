@@ -26,7 +26,9 @@ fun PlaceKeeperBottomNavigation(
         modifier = Modifier
             .fillMaxWidth()
             .height(90.dp)
+            .padding(bottom = 4.dp)
             .background(MaterialTheme.colorScheme.surfaceVariant),
+
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -63,8 +65,8 @@ private fun NavItem(
 ) {
     Column(
         modifier = Modifier
-            .padding(8.dp)
-            .clip(MaterialTheme.shapes.medium)
+            .padding(12.dp)
+            .clip(MaterialTheme.shapes.extraSmall)
             .clickable(onClick = onItemClick),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
