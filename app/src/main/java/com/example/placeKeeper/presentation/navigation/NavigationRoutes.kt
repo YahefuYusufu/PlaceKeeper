@@ -70,9 +70,7 @@ fun NavGraphBuilder.placeKeeperGraph(
             onNavigateBack = {
                 navController.popBackStack()
             },
-            onPlaceAdded = {
-                navController.popBackStack()
-            }
+
         )
     }
 

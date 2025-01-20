@@ -1,66 +1,106 @@
 package com.example.placeKeeper.presentation.screens.addplace
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.placeKeeper.presentation.screens.addplace.components.CategorySelector
+import com.example.placeKeeper.presentation.screens.addplace.components.LocationSection
+import com.example.placeKeeper.presentation.screens.addplace.components.PlaceDescription
+import com.example.placeKeeper.presentation.screens.addplace.components.PlaceNameInput
+import com.example.placeKeeper.presentation.screens.addplace.components.RatingSelector
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddPlaceScreen(
     onNavigateBack: () -> Unit,
-    onPlaceAdded: () -> Unit
+    viewModel: AddPlaceViewModel = hiltViewModel()
 ) {
+    val inputState by viewModel.inputState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
+    val categories by viewModel.categories.collectAsState()
+
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is AddPlaceUiState.Success -> onNavigateBack()
+            else -> Unit
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add New Place") },
+                title = { Text("Add Place") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Navigate back"
-                        )
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
+                    }
+                },
+                actions = {
+                    TextButton(
+                        onClick = viewModel::addPlace,
+                        enabled = inputState.name.isNotBlank() &&
+                                uiState !is AddPlaceUiState.Loading
+                    ) {
+                        Text("Save")
                     }
                 }
             )
         }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp)
-        ) {
-            // Add your place form components here
-            // Example:
-            var placeName by remember { mutableStateOf("") }
-
-            OutlinedTextField(
-                value = placeName,
-                onValueChange = { placeName = it },
-                label = { Text("Place Name") },
+    ) { padding ->
+        Box(modifier = Modifier.padding(padding)) {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            )
-
-            // Add more form fields as needed
-
-            Button(
-                onClick = {
-                    // Handle saving the place
-                    // After successful save:
-                    onPlaceAdded()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp)
+                    .fillMaxSize()
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text("Save Place")
+                PlaceNameInput(
+                    name = inputState.name,
+                    onNameChange = viewModel::updateName,
+                    isError = uiState is AddPlaceUiState.Error,
+                    errorMessage = (uiState as? AddPlaceUiState.Error)?.message
+                )
+
+                CategorySelector(
+                    categories = categories,
+                    selectedCategoryId = inputState.categoryId,
+                    onCategorySelected = viewModel::updateCategory
+                )
+
+                LocationSection(
+                    latitude = inputState.latitude,
+                    longitude = inputState.longitude,
+                    onLocationSelected = viewModel::updateLocation
+                )
+
+                PlaceDescription(
+                    description = inputState.description,
+                    onDescriptionChange = viewModel::updateDescription
+                )
+
+                RatingSelector(
+                    rating = inputState.rating,
+                    onRatingChange = viewModel::updateRating
+                )
+            }
+
+            // Loading indicator
+            if (uiState is AddPlaceUiState.Loading) {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopCenter)
+                )
             }
         }
     }
