@@ -1,6 +1,6 @@
 package com.example.placeKeeper.presentation.screens.addplace
 
-import android.util.Log
+ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.placeKeeper.domain.model.Category
@@ -9,7 +9,6 @@ import com.example.placeKeeper.domain.repository.PlaceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AddPlaceViewModel @Inject constructor(
     private val placeRepository: PlaceRepository,
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
 ) : ViewModel() {
     private val TAG = "AddPlaceViewModel"
 
@@ -29,6 +28,7 @@ class AddPlaceViewModel @Inject constructor(
 
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
     val categories = _categories.asStateFlow()
+
 
     init {
         loadCategories()
