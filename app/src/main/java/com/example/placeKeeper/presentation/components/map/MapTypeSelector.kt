@@ -47,7 +47,7 @@ fun MapTypeSelector(
             Icon(
                 imageVector = Icons.Default.Layers,
                 contentDescription = "Change map type",
-                tint = MaterialTheme.colorScheme.primaryContainer
+                tint = MaterialTheme.colorScheme.surfaceContainer
             )
         }
 

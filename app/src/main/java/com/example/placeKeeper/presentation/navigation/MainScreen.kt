@@ -51,7 +51,7 @@ fun MainScreen() {
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .offset(y = (-48).dp)
+                        .offset(y = (-58).dp)
                         .zIndex(1f)
                 ) {
                     AddPlaceButton(

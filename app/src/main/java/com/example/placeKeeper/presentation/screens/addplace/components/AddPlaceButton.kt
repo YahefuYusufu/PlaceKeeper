@@ -19,7 +19,7 @@ fun AddPlaceButton(
 ) {
     FloatingActionButton(
         onClick = onClick,
-        containerColor = MaterialTheme.colorScheme.inversePrimary,
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
         contentColor = MaterialTheme.colorScheme.primary,
         modifier = modifier
             .size(64.dp)

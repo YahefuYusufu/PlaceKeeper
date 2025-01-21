@@ -178,7 +178,7 @@ fun HomeScreen() {
                 .padding(top = 88.dp, end = 16.dp),
             containerColor = MaterialTheme.colorScheme.
             primary,
-            contentColor = MaterialTheme.colorScheme.primaryContainer
+            contentColor = MaterialTheme.colorScheme.surfaceContainer
         ) {
             Icon(Icons.Rounded.MyLocation, "My Location")
         }

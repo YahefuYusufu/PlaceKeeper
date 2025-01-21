@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -75,8 +76,8 @@ private fun NavItem(
             contentDescription = item.title,
             modifier = Modifier.size(28.dp),
             tint = if (selected)
-                MaterialTheme.colorScheme.primaryContainer
-            else MaterialTheme.colorScheme.onSecondaryContainer
+                Color.White
+            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
 
         Text(
@@ -84,7 +85,7 @@ private fun NavItem(
             style = MaterialTheme.typography.bodySmall,
             fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
             color = if (selected)
-                MaterialTheme.colorScheme.primaryContainer
+                Color.White
             else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
     }
