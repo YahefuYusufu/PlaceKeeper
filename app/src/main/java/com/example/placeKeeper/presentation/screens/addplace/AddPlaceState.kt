@@ -15,8 +15,8 @@ data class AddPlaceInputState(
     val locationError: String? = null
 ) {
     // Add validation functions
-    private fun isValidLatitude() = latitude in -90.0..90.0
-    private fun isValidLongitude() = longitude in -180.0..180.0
+    fun isValidLatitude() = latitude in -90.0..90.0
+    fun isValidLongitude() = longitude in -180.0..180.0
     fun hasValidLocation() = latitude != 0.0 && longitude != 0.0 &&
             isValidLatitude() && isValidLongitude()
 

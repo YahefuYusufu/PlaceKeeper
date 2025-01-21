@@ -1,8 +1,9 @@
 package com.example.placeKeeper.presentation.screens.addplace
 
- import android.util.Log
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.placeKeeper.domain.location.LocationManager
 import com.example.placeKeeper.domain.model.Category
 import com.example.placeKeeper.domain.repository.CategoryRepository
 import com.example.placeKeeper.domain.repository.PlaceRepository
@@ -17,6 +18,7 @@ import javax.inject.Inject
 class AddPlaceViewModel @Inject constructor(
     private val placeRepository: PlaceRepository,
     private val categoryRepository: CategoryRepository,
+    private val locationManager: LocationManager
 ) : ViewModel() {
     private val TAG = "AddPlaceViewModel"
 
@@ -29,6 +31,7 @@ class AddPlaceViewModel @Inject constructor(
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
     val categories = _categories.asStateFlow()
 
+    val locationPermissionGranted = locationManager.locationPermissionGranted
 
     init {
         loadCategories()
@@ -56,16 +59,93 @@ class AddPlaceViewModel @Inject constructor(
         }
     }
 
+    fun onLocationEvent(event: LocationEvent) {
+        when (event) {
+            is LocationEvent.ShowLocationDialog -> {
+                _inputState.update { it.copy(isLocationDialogVisible = true) }
+            }
+
+            is LocationEvent.HideLocationDialog -> {
+                _inputState.update {
+                    it.copy(
+                        isLocationDialogVisible = false,
+                        locationError = null
+                    )
+                }
+            }
+
+            is LocationEvent.UpdateLocation -> {
+                updateLocation(event.latitude, event.longitude)
+            }
+
+            is LocationEvent.RequestCurrentLocation -> {
+                getCurrentLocation()
+            }
+
+            is LocationEvent.ClearLocationError -> {
+                _inputState.update { it.copy(locationError = null) }
+            }
+        }
+    }
+
+    fun updateLocationPermissionStatus(granted: Boolean) {
+        locationManager.updatePermissionStatus(granted)
+    }
+
+    private fun getCurrentLocation() {
+        viewModelScope.launch {
+            try {
+                // Add log to check if this function is being called
+                Log.d(TAG, "Requesting current location...")
+
+                // Check if permission is granted first
+                if (!locationManager.locationPermissionGranted.value) {
+                    Log.d(TAG, "Location permission not granted")
+                    _inputState.update {
+                        it.copy(locationError = "Location permission not granted")
+                    }
+                    return@launch
+                }
+
+                locationManager.getCurrentLocation()
+                    .onSuccess { location ->
+                        Log.d(TAG, "Location received: ${location.latitude}, ${location.longitude}")
+                        updateLocation(location.latitude, location.longitude)
+                    }
+                    .onFailure { exception ->
+                        Log.e(TAG, "Failed to get location", exception)
+                        _inputState.update {
+                            it.copy(locationError = exception.message ?: "Failed to get location")
+                        }
+                    }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error getting location", e)
+                _inputState.update {
+                    it.copy(locationError = e.message ?: "Failed to get location")
+                }
+            }
+        }
+    }
+
     fun updateName(name: String) {
         _inputState.update { it.copy(name = name) }
         resetErrorIfAny()
     }
 
-    fun updateLocation(latitude: Double, longitude: Double) {
+    private fun updateLocation(latitude: Double, longitude: Double) {
+        val currentState = _inputState.value
+        if (!currentState.isValidLatitude() || !currentState.isValidLongitude()) {
+            _inputState.update {
+                it.copy(locationError = "Invalid coordinates")
+            }
+            return
+        }
+
         _inputState.update {
             it.copy(
                 latitude = latitude,
-                longitude = longitude
+                longitude = longitude,
+                locationError = null
             )
         }
         resetErrorIfAny()
@@ -115,22 +195,14 @@ class AddPlaceViewModel @Inject constructor(
     }
 
     private fun validateInputs(state: AddPlaceInputState): Boolean {
-        when {
-            state.name.length < 3 -> {
-                _uiState.value = AddPlaceUiState.Error("Name must be at least 3 characters")
-                return false
-            }
-            state.categoryId == 0L -> {
-                _uiState.value = AddPlaceUiState.Error("Please select a category")
-                return false
-            }
-            state.latitude == 0.0 && state.longitude == 0.0 -> {
-                _uiState.value = AddPlaceUiState.Error("Please select a location")
-                return false
-            }
+        val validationError = state.getValidationError()
+        if (validationError != null) {
+            _uiState.value = AddPlaceUiState.Error(validationError)
+            return false
         }
         return true
     }
+
 
     private fun resetErrorIfAny() {
         if (_uiState.value is AddPlaceUiState.Error) {

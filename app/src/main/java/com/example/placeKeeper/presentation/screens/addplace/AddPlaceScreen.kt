@@ -78,9 +78,9 @@ fun AddPlaceScreen(
                 )
 
                 LocationSection(
-                    latitude = inputState.latitude,
-                    longitude = inputState.longitude,
-                    onLocationSelected = viewModel::updateLocation
+                    state = inputState,
+                    onLocationEvent = viewModel::onLocationEvent,
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 PlaceDescription(
