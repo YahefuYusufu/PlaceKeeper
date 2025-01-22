@@ -88,47 +88,45 @@ fun AddPlaceScreen(
                     .height(200.dp)
             )
 
-//            // Name and Category in the same row
-//            Row(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(vertical = 8.dp),
-//                horizontalArrangement = Arrangement.spacedBy(12.dp)
-//            ) {
-//                PlaceNameInput(
-//                    name = inputState.name,
-//                    onNameChange = viewModel::updateName,
-//                    isError = uiState is AddPlaceUiState.Error,
-//                    errorMessage = (uiState as? AddPlaceUiState.Error)?.message,
-//                    modifier = Modifier.weight(1f)
-//                )
+            // Name and Category in the same row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                PlaceNameInput(
+                    name = inputState.name,
+                    onNameChange = viewModel::updateName,
+                    isError = uiState is AddPlaceUiState.Error,
+                    errorMessage = (uiState as? AddPlaceUiState.Error)?.message,
+                    modifier = Modifier.weight(1f)
+                )
+
+                CategorySelector(
+                    categories = categories,
+                    selectedCategoryId = inputState.categoryId,
+                    onCategorySelected = viewModel::updateCategory,
+                    modifier = Modifier.weight(1f)
+                )
+            }
 //
-//                CategorySelector(
-//                    categories = categories,
-//                    selectedCategoryId = inputState.categoryId,
-//                    onCategorySelected = viewModel::updateCategory,
-//                    modifier = Modifier.weight(1f)
-//                )
-//            }
-//
-//            // Rating
-//            RatingSelector(
-//                rating = inputState.rating,
-//                onRatingChange = viewModel::updateRating,
-//                modifier = Modifier.fillMaxWidth()
-//            )
-//
-//            // Description
-//            PlaceDescription(
-//                description = inputState.description,
-//                onDescriptionChange = viewModel::updateDescription,
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .weight(1f) // Give remaining space to description
-//            )
-//
-//            // Add some bottom padding to ensure content isn't cut off
-//            Spacer(modifier = Modifier.height(16.dp))
+            // Rating
+            RatingSelector(
+                rating = inputState.rating,
+                onRatingChange = viewModel::updateRating,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            // Description
+            PlaceDescription(
+                description = inputState.description,
+                onDescriptionChange = viewModel::updateDescription,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f) // Give remaining space to description
+            )
+
+            // Add some bottom padding to ensure content isn't cut off
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

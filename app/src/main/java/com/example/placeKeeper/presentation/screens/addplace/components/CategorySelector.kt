@@ -1,6 +1,7 @@
 package com.example.placeKeeper.presentation.screens.addplace.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
@@ -38,55 +39,59 @@ fun CategorySelector(
     var expanded by remember { mutableStateOf(false) }
     val selectedCategory = categories.find { it.id == selectedCategoryId }
 
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
-    ) {
-        OutlinedTextField(
-            value = selectedCategory?.name ?: "Select Category",
-            onValueChange = {},
-            readOnly = true,
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = modifier
-                .fillMaxWidth()
-                .menuAnchor()
-        )
-
-        ExposedDropdownMenu(
+    Box(modifier = modifier) {
+        ExposedDropdownMenuBox(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onExpandedChange = { expanded = !expanded }
         ) {
-            categories.forEach { category ->
-                DropdownMenuItem(
-                    text = {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            val defaultColor = MaterialTheme.colorScheme.primary
-                            val iconTint = remember(category.color) {
-                                try {
-                                    Color(android.graphics.Color.parseColor(category.color))
-                                } catch (e: IllegalArgumentException) {
-                                    defaultColor
-                                }
-                            }
+            OutlinedTextField(
+                value = selectedCategory?.name ?: "Select Category",
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Category") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(),
+                singleLine = true
+            )
 
-                            Icon(
-                                imageVector = CategoryConstants.AVAILABLE_ICONS
-                                    .find { it.iconName == category.iconName }
-                                    ?.imageVector ?: Icons.Default.Place,
-                                contentDescription = null,
-                                tint = iconTint
-                            )
-                            Text(category.name)
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                categories.forEach { category ->
+                    DropdownMenuItem(
+                        text = {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                val defaultColor = MaterialTheme.colorScheme.primary
+                                val iconTint = remember(category.color) {
+                                    try {
+                                        Color(android.graphics.Color.parseColor(category.color))
+                                    } catch (e: IllegalArgumentException) {
+                                        defaultColor
+                                    }
+                                }
+
+                                Icon(
+                                    imageVector = CategoryConstants.AVAILABLE_ICONS
+                                        .find { it.iconName == category.iconName }
+                                        ?.imageVector ?: Icons.Default.Place,
+                                    contentDescription = null,
+                                    tint = iconTint
+                                )
+                                Text(category.name)
+                            }
+                        },
+                        onClick = {
+                            onCategorySelected(category.id)
+                            expanded = false
                         }
-                    },
-                    onClick = {
-                        onCategorySelected(category.id)
-                        expanded = false
-                    }
-                )
+                    )
+                }
             }
         }
     }

@@ -24,7 +24,7 @@ fun PlaceNameInput(
             if (isError && errorMessage != null) {
                 Text(errorMessage)
             } else {
-                Text("${name.length}/50")
+                Text("${name.length}/10")
             }
         },
         singleLine = true
