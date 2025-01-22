@@ -1,13 +1,28 @@
 package com.example.placeKeeper.presentation.screens.addplace
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -55,53 +70,65 @@ fun AddPlaceScreen(
                 }
             )
         }
-    ) { padding ->
-        Box(modifier = Modifier.padding(padding)) {
-            Column(
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState()) // Add scrolling capability
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Map at the top
+            LocationSection(
+                state = inputState,
+                onLocationEvent = viewModel::onLocationEvent,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                PlaceNameInput(
-                    name = inputState.name,
-                    onNameChange = viewModel::updateName,
-                    isError = uiState is AddPlaceUiState.Error,
-                    errorMessage = (uiState as? AddPlaceUiState.Error)?.message
-                )
+                    .fillMaxWidth()
+                    .height(200.dp)
+            )
 
-                CategorySelector(
-                    categories = categories,
-                    selectedCategoryId = inputState.categoryId,
-                    onCategorySelected = viewModel::updateCategory
-                )
-
-                LocationSection(
-                    state = inputState,
-                    onLocationEvent = viewModel::onLocationEvent,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                PlaceDescription(
-                    description = inputState.description,
-                    onDescriptionChange = viewModel::updateDescription
-                )
-
-                RatingSelector(
-                    rating = inputState.rating,
-                    onRatingChange = viewModel::updateRating
-                )
-            }
-
-            // Loading indicator
-            if (uiState is AddPlaceUiState.Loading) {
-                LinearProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.TopCenter)
-                )
-            }
+//            // Name and Category in the same row
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(vertical = 8.dp),
+//                horizontalArrangement = Arrangement.spacedBy(12.dp)
+//            ) {
+//                PlaceNameInput(
+//                    name = inputState.name,
+//                    onNameChange = viewModel::updateName,
+//                    isError = uiState is AddPlaceUiState.Error,
+//                    errorMessage = (uiState as? AddPlaceUiState.Error)?.message,
+//                    modifier = Modifier.weight(1f)
+//                )
+//
+//                CategorySelector(
+//                    categories = categories,
+//                    selectedCategoryId = inputState.categoryId,
+//                    onCategorySelected = viewModel::updateCategory,
+//                    modifier = Modifier.weight(1f)
+//                )
+//            }
+//
+//            // Rating
+//            RatingSelector(
+//                rating = inputState.rating,
+//                onRatingChange = viewModel::updateRating,
+//                modifier = Modifier.fillMaxWidth()
+//            )
+//
+//            // Description
+//            PlaceDescription(
+//                description = inputState.description,
+//                onDescriptionChange = viewModel::updateDescription,
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .weight(1f) // Give remaining space to description
+//            )
+//
+//            // Add some bottom padding to ensure content isn't cut off
+//            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

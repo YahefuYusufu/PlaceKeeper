@@ -1,28 +1,27 @@
 package com.example.placeKeeper.presentation.screens.addplace.components
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.border
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
  import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
+ import androidx.compose.material3.Text
+ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,12 +44,19 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
  import androidx.compose.material3.FloatingActionButton
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Fullscreen
+import androidx.compose.material.ripple.rememberRipple
+ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapType
+import com.google.maps.android.compose.MapUiSettings
 
 
 @SuppressLint("DefaultLocale")
@@ -61,8 +67,8 @@ fun LocationSection(
     modifier: Modifier = Modifier,
     viewModel: AddPlaceViewModel = hiltViewModel()
 ) {
+    var isExpanded by remember { mutableStateOf(false) }
     val locationPermissionGranted by viewModel.locationPermissionGranted.collectAsState()
-
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -73,231 +79,234 @@ fun LocationSection(
         }
     }
 
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Text(
-            "Location",
-            style = MaterialTheme.typography.titleMedium
-        )
 
-        // Show selected location if available
-        if (state.latitude != 0.0 && state.longitude != 0.0) {
-            Text(
-                text = "Selected: ${String.format("%.6f", state.latitude)}, ${String.format("%.6f", state.longitude)}",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-
-        // Location error message if any
-        state.locationError?.let { error ->
-            Text(
-                text = error,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
-
-        // Location selection buttons
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            OutlinedButton(
-                onClick = {
-                    if (!locationPermissionGranted) {
-                        locationPermissionLauncher.launch(PermissionUtils.REQUIRED_PERMISSIONS)
-                    } else {
-                        onLocationEvent(LocationEvent.RequestCurrentLocation)
-                    }
-                },
-                modifier = Modifier.weight(1f)
-            ) {
-                Icon(
-                    Icons.Default.MyLocation,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(Modifier.width(4.dp))
-                Text("Current Location")
-            }
-
-            OutlinedButton(
-                onClick = { onLocationEvent(LocationEvent.ShowLocationDialog) },
-                modifier = Modifier.weight(1f)
-            ) {
-                Icon(
-                    Icons.Default.Edit,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(Modifier.width(4.dp))
-                Text("Enter Manually")
-            }
-        }
-
-        // Manual location input dialog
-        if (state.isLocationDialogVisible) {
-            LocationInputDialog(
-                initialLatitude = state.latitude,
-                initialLongitude = state.longitude,
-                onLocationSelected = { lat, lng ->
-                    onLocationEvent(LocationEvent.UpdateLocation(lat, lng))
-                    onLocationEvent(LocationEvent.HideLocationDialog)
-                },
-                onDismiss = { onLocationEvent(LocationEvent.HideLocationDialog) }
-            )
-        }
-    }
-}
-
-@SuppressLint("DefaultLocale")
-@Composable
-private fun LocationInputDialog(
-    initialLatitude: Double,
-    initialLongitude: Double,
-    onLocationSelected: (Double, Double) -> Unit,
-    onDismiss: () -> Unit,
-    viewModel: AddPlaceViewModel = hiltViewModel()
-) {
-
-    val inputState by viewModel.inputState.collectAsState()
-    val locationError = inputState.locationError
-    var selectedPosition by remember {
-        mutableStateOf(
-            if (initialLatitude != 0.0 && initialLongitude != 0.0)
-                LatLng(initialLatitude, initialLongitude)
-            else
-                LatLng(-6.200000, 106.816666) // Jakarta as default location
-        )
+    val selectedPosition = if (state.latitude != 0.0 && state.longitude != 0.0) {
+        LatLng(state.latitude, state.longitude)
+    } else {
+        LatLng(-6.200000, 106.816666) // Jakarta as default
     }
 
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(selectedPosition, 12f)
     }
 
-    LaunchedEffect(inputState.latitude, inputState.longitude) {
-        if (inputState.latitude != 0.0 && inputState.longitude != 0.0) {
-            val newPosition = LatLng(inputState.latitude, inputState.longitude)
-            selectedPosition = newPosition
-            // Animate camera to new position
-            cameraPositionState.animate(
-                CameraUpdateFactory.newCameraPosition(
-                    CameraPosition.fromLatLngZoom(newPosition, 15f)
+    // Track the last position to detect changes
+    val lastPosition = remember { mutableStateOf(selectedPosition) }
+
+    // Center map when location changes or view state changes
+    LaunchedEffect(state.latitude, state.longitude, isExpanded) {
+        if (state.latitude != 0.0 && state.longitude != 0.0) {
+            val newPosition = LatLng(state.latitude, state.longitude)
+            // Only animate if position actually changed
+            if (newPosition != lastPosition.value) {
+                lastPosition.value = newPosition
+                val zoomLevel = if (isExpanded) 15f else 17f
+                cameraPositionState.animate(
+                    update = CameraUpdateFactory.newCameraPosition(
+                        CameraPosition.builder()
+                            .target(newPosition)
+                            .zoom(zoomLevel)
+                            .build()
+                    ),
+                    durationMs = 750  // Slightly longer animation for smoother movement
                 )
-            )
+            }
         }
     }
 
 
 
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(
-            dismissOnBackPress = true,
-            dismissOnClickOutside = true,
-            usePlatformDefaultWidth = false
-        )
-    ) {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth(0.9f)
-                .fillMaxHeight(0.8f),
-            shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.surface
+
+    if (isExpanded) {
+        // Expanded map dialog
+        Dialog(
+            onDismissRequest = { isExpanded = false },
+            properties = DialogProperties(
+                dismissOnBackPress = true,
+                dismissOnClickOutside = true,
+                usePlatformDefaultWidth = false
+            )
         ) {
-            Column(
+            Surface(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .fillMaxWidth(0.9f)    // Slightly smaller width
+                    .fillMaxHeight(0.7f)
+                    .border(
+                        width = 2.dp,
+                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .shadow(
+                        elevation = 8.dp,
+                        shape = RoundedCornerShape(16.dp),
+                        spotColor = MaterialTheme.colorScheme.outline
+                    ),
+                shape = RoundedCornerShape(16.dp),
+                tonalElevation = 2.dp,
+                color = MaterialTheme.colorScheme.surface
             ) {
-                // Title
-                Text(
-                    "Select Location",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
+                Box(modifier = Modifier.fillMaxSize()) {
+                    MapContent(
+                        state = state,
+                        onLocationEvent = onLocationEvent,
+                        locationPermissionGranted = locationPermissionGranted,
+                        locationPermissionLauncher = locationPermissionLauncher,
+                        showZoomControls = true,
+                        modifier = Modifier.fillMaxSize()
+                    )
 
-                // Map
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
-                ) {
-                    GoogleMap(
-                        modifier = Modifier.fillMaxSize(),
-                        cameraPositionState = cameraPositionState,
-                        onMapClick = { latLng ->
-                            selectedPosition = latLng
-                        }
-                    ) {
-                        Marker(
-                            state = MarkerState(position = selectedPosition),
-                            title = "Selected Location"
-                        )
-                    }
-
-
-
-                    // Current Location FAB
-                    FloatingActionButton(
-                        onClick = {
-                            // Request current location
-                            viewModel.onLocationEvent(LocationEvent.RequestCurrentLocation)
-                        },
+                    // Close button
+                    IconButton(
+                        onClick = { isExpanded = false },
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .padding(16.dp),
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                            .padding(8.dp)
                     ) {
                         Icon(
-                            Icons.Default.MyLocation,
-                            contentDescription = "Get Current Location"
+                            Icons.Default.Close,
+                            contentDescription = "Close Map",
+                            tint = MaterialTheme.colorScheme.primary
                         )
-                    }
-                    locationError?.let { error ->
-                        Text(
-                            text = error,
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.padding(16.dp)
-                        )
-                    }
-                }
-
-                // Coordinates display
-                Text(
-                    text = "Selected Position: ${String.format("%.6f", selectedPosition.latitude)}, " +
-                            String.format("%.6f", selectedPosition.longitude),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                // Buttons
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    TextButton(onClick = onDismiss) {
-                        Text("Cancel")
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Button(
-                        onClick = {
-                            onLocationSelected(
-                                selectedPosition.latitude,
-                                selectedPosition.longitude
-                            )
-                        }
-                    ) {
-                        Text("Select")
                     }
                 }
             }
+        }
+    }
+
+    // Compact map view
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .shadow(
+                    elevation = 2.dp,
+                    shape = RoundedCornerShape(12.dp),
+                    spotColor = MaterialTheme.colorScheme.outline
+                )
+                .hoverable(interactionSource = remember { MutableInteractionSource() })
+                .indication(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = rememberRipple(bounded = true)
+                )
+        ) {
+            MapContent(
+                state = state,
+                onLocationEvent = onLocationEvent,
+                locationPermissionGranted = locationPermissionGranted,
+                locationPermissionLauncher = locationPermissionLauncher,
+                showZoomControls = false,
+                modifier = Modifier.fillMaxSize()
+            )
+
+            // Expand button
+            IconButton(
+                onClick = { isExpanded = true },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
+            ) {
+                Icon(
+                    Icons.Default.Fullscreen,
+                    contentDescription = "Expand Map",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+
+        // Location coordinates if available
+        if (state.latitude != 0.0 && state.longitude != 0.0) {
+            Text(
+                text = "Location: ${String.format("%.6f", state.latitude)}, ${String.format("%.6f", state.longitude)}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+        }
+
+        // Error message if any
+        state.locationError?.let { error ->
+            Text(
+                text = error,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun MapContent(
+    state: AddPlaceInputState,
+    onLocationEvent: (LocationEvent) -> Unit,
+    locationPermissionGranted: Boolean,
+    locationPermissionLauncher: ManagedActivityResultLauncher<Array<String>, Map<String, Boolean>>,
+    showZoomControls: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val selectedPosition = if (state.latitude != 0.0 && state.longitude != 0.0) {
+        LatLng(state.latitude, state.longitude)
+    } else {
+        LatLng(-6.200000, 106.816666) // Jakarta as default
+    }
+
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(selectedPosition, 12f)
+    }
+
+    Box(modifier = modifier) {
+        GoogleMap(
+            modifier = Modifier.fillMaxSize(),
+            cameraPositionState = cameraPositionState,
+            properties = MapProperties(
+                isMyLocationEnabled = locationPermissionGranted,
+                mapType = MapType.NORMAL
+            ),
+            uiSettings = MapUiSettings(
+                zoomControlsEnabled = showZoomControls,
+                myLocationButtonEnabled = false,
+                zoomGesturesEnabled = true,
+                scrollGesturesEnabled = true,
+                rotationGesturesEnabled = true,
+                tiltGesturesEnabled = true,
+                compassEnabled = true,
+                scrollGesturesEnabledDuringRotateOrZoom = true,
+            ),
+            onMapClick = { latLng ->
+                onLocationEvent(LocationEvent.UpdateLocation(latLng.latitude, latLng.longitude))
+            }
+        ) {
+            if (state.latitude != 0.0 && state.longitude != 0.0) {
+                Marker(
+                    state = MarkerState(position = selectedPosition),
+                    title = "Selected Location"
+                )
+            }
+        }
+
+        // Current Location FAB
+        FloatingActionButton(
+            onClick = {
+                if (!locationPermissionGranted) {
+                    locationPermissionLauncher.launch(PermissionUtils.REQUIRED_PERMISSIONS)
+                } else {
+                    onLocationEvent(LocationEvent.RequestCurrentLocation)
+                }
+            },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(8.dp),
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ) {
+            Icon(
+                Icons.Default.MyLocation,
+                contentDescription = "Get Current Location"
+            )
         }
     }
 }
