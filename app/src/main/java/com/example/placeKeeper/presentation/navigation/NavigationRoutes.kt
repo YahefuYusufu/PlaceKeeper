@@ -12,7 +12,7 @@ import com.example.placeKeeper.presentation.screens.categories.CategoriesScreen
 import com.example.placeKeeper.presentation.screens.home.HomeScreen
 import com.example.placeKeeper.presentation.screens.places.PlacesListScreen
 import com.example.placeKeeper.presentation.screens.places.PlacesScreen
-import com.example.placeKeeper.presentation.screens.savedPlaces.SavedScreen
+import com.example.placeKeeper.presentation.screens.savedPlaces.SavedPlaceScreen
 
 fun NavGraphBuilder.placeKeeperGraph(
     navController: NavHostController
@@ -79,7 +79,7 @@ fun NavGraphBuilder.placeKeeperGraph(
 
     // Saved Places Screen
     composable(route = NavigationItem.Saved.route) {
-        SavedScreen()
+        SavedPlaceScreen()
     }
 }
 
