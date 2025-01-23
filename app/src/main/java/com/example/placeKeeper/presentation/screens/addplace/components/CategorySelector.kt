@@ -38,6 +38,7 @@ fun CategorySelector(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val selectedCategory = categories.find { it.id == selectedCategoryId }
+        .takeIf { selectedCategoryId != 0L } // Only find category if ID is not 0
 
     Box(modifier = modifier) {
         ExposedDropdownMenuBox(
@@ -45,7 +46,7 @@ fun CategorySelector(
             onExpandedChange = { expanded = !expanded }
         ) {
             OutlinedTextField(
-                value = selectedCategory?.name ?: "Select Category",
+                value = selectedCategory?.name ?: "Select One",
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("Category") },
@@ -53,7 +54,8 @@ fun CategorySelector(
                 modifier = Modifier
                     .fillMaxWidth()
                     .menuAnchor(),
-                singleLine = true
+                singleLine = true,
+                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
             )
 
             ExposedDropdownMenu(

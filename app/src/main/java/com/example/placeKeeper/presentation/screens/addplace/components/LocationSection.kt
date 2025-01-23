@@ -16,23 +16,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
- import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
- import androidx.compose.material3.Text
- import androidx.compose.runtime.Composable
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
- import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
- import com.example.placeKeeper.presentation.screens.addplace.AddPlaceInputState
+import com.example.placeKeeper.presentation.screens.addplace.AddPlaceInputState
 import com.example.placeKeeper.presentation.screens.addplace.AddPlaceViewModel
 import com.example.placeKeeper.presentation.screens.addplace.LocationEvent
 import com.example.placeKeeper.utils.PermissionUtils
@@ -42,12 +42,12 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
- import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.ripple.rememberRipple
- import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -108,7 +108,7 @@ fun LocationSection(
                             .zoom(zoomLevel)
                             .build()
                     ),
-                    durationMs = 750  // Slightly longer animation for smoother movement
+                    durationMs = 750
                 )
             }
         }
@@ -118,7 +118,7 @@ fun LocationSection(
 
 
     if (isExpanded) {
-        // Expanded map dialog
+
         Dialog(
             onDismissRequest = { isExpanded = false },
             properties = DialogProperties(
@@ -129,7 +129,7 @@ fun LocationSection(
         ) {
             Surface(
                 modifier = Modifier
-                    .fillMaxWidth(0.9f)    // Slightly smaller width
+                    .fillMaxWidth(0.9f)
                     .fillMaxHeight(0.7f)
                     .border(
                         width = 2.dp,
@@ -221,7 +221,12 @@ fun LocationSection(
         // Location coordinates if available
         if (state.latitude != 0.0 && state.longitude != 0.0) {
             Text(
-                text = "Location: ${String.format("%.6f", state.latitude)}, ${String.format("%.6f", state.longitude)}",
+                text = "Location: ${String.format("%.6f", state.latitude)}, ${
+                    String.format(
+                        "%.6f",
+                        state.longitude
+                    )
+                }",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 16.dp)
@@ -279,6 +284,12 @@ private fun MapContent(
             ),
             onMapClick = { latLng ->
                 onLocationEvent(LocationEvent.UpdateLocation(latLng.latitude, latLng.longitude))
+            },
+            onPOIClick = { poi ->
+                onLocationEvent(LocationEvent.UpdateLocation(poi.latLng.latitude, poi.latLng.longitude))
+            },
+            onMyLocationClick = { location ->
+                onLocationEvent(LocationEvent.UpdateLocation(location.latitude, location.longitude))
             }
         ) {
             if (state.latitude != 0.0 && state.longitude != 0.0) {

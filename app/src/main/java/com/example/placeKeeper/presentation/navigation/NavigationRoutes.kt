@@ -1,5 +1,6 @@
 package com.example.placeKeeper.presentation.navigation
 
+import android.util.Log
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -25,15 +26,15 @@ fun NavGraphBuilder.placeKeeperGraph(
     composable(route = NavigationItem.Categories.route) {
         CategoriesScreen(
             navigateToAddCategory = {
-                navController.navigate("add_category")
+                navController.navigate(Routes.ADD_CATEGORY)
             },
             navigateToPlaces = { categoryId ->
-                navController.navigate("places/$categoryId")
+                navController.navigate(Routes.placesRoute(categoryId))
             }
         )
     }
 
-    composable(route = "add_category") {
+    composable(route = Routes.ADD_CATEGORY) {
         AddCategoryScreen(
             onNavigateBack = {
                 navController.popBackStack()
@@ -42,7 +43,7 @@ fun NavGraphBuilder.placeKeeperGraph(
     }
 
     composable(
-        route = "places/{categoryId}",
+        route = Routes.PLACES,
         arguments = listOf(
             navArgument("categoryId") { type = NavType.LongType }
         )
@@ -54,7 +55,7 @@ fun NavGraphBuilder.placeKeeperGraph(
                 navController.popBackStack()
             },
             onAddPlace = {
-                navController.navigate("add_place")
+                navController.navigate(Routes.ADD_PLACE)
             }
         )
     }
@@ -65,12 +66,14 @@ fun NavGraphBuilder.placeKeeperGraph(
     }
 
     // Add Place Screen
-    composable(route = "add_place") {
+    composable(route = Routes.ADD_PLACE) {
         AddPlaceScreen(
-            onNavigateBack = {
+            onPlaceSaved = { placeId ->
+                if (placeId > 0) {
+                    Log.d("Navigation", "Place saved successfully with ID: $placeId")
+                }
                 navController.popBackStack()
-            },
-
+            }
         )
     }
 
@@ -90,6 +93,5 @@ object Routes {
     const val ADD_PLACE = "add_place"
     const val PLACES = "places/{categoryId}"
 
-    // Helper function to create places route with categoryId
     fun placesRoute(categoryId: Long) = "places/$categoryId"
 }

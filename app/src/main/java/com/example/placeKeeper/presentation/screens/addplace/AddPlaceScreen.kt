@@ -1,9 +1,9 @@
 package com.example.placeKeeper.presentation.screens.addplace
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -36,7 +37,7 @@ import com.example.placeKeeper.presentation.screens.addplace.components.RatingSe
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddPlaceScreen(
-    onNavigateBack: () -> Unit,
+    onPlaceSaved: (Long) -> Unit,
     viewModel: AddPlaceViewModel = hiltViewModel()
 ) {
     val inputState by viewModel.inputState.collectAsState()
@@ -44,9 +45,27 @@ fun AddPlaceScreen(
     val categories by viewModel.categories.collectAsState()
 
     LaunchedEffect(uiState) {
+        Log.d("AddPlaceScreen", "Current uiState: $uiState")
         when (uiState) {
-            is AddPlaceUiState.Success -> onNavigateBack()
-            else -> Unit
+            is AddPlaceUiState.Success -> {
+                Log.d("AddPlaceScreen", "Success state detected, navigating back")
+                viewModel.resetState()
+            }
+            is AddPlaceUiState.Loading -> {
+                Log.d("AddPlaceScreen", "Loading state")
+            }
+            is AddPlaceUiState.Error -> {
+                Log.d("AddPlaceScreen", "Error state: ${(uiState as AddPlaceUiState.Error).message}")
+            }
+            is AddPlaceUiState.Initial -> {
+                Log.d("AddPlaceScreen", "Initial state")
+            }
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            Log.d("AddPlaceScreen", "Screen disposed")
         }
     }
 
@@ -55,7 +74,9 @@ fun AddPlaceScreen(
             TopAppBar(
                 title = { Text("Add Place") },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
+                    IconButton(onClick = {
+                        onPlaceSaved(-1)
+                    }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
                     }
                 },
@@ -75,7 +96,7 @@ fun AddPlaceScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .verticalScroll(rememberScrollState()) // Add scrolling capability
+                .verticalScroll(rememberScrollState())
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -108,9 +129,8 @@ fun AddPlaceScreen(
                     modifier = Modifier.weight(1f)
                 )
             }
-//
-            // Rating
-            RatingSelector(
+
+             RatingSelector(
                 rating = inputState.rating,
                 onRatingChange = viewModel::updateRating,
                 modifier = Modifier.fillMaxWidth()
@@ -120,13 +140,8 @@ fun AddPlaceScreen(
             PlaceDescription(
                 description = inputState.description,
                 onDescriptionChange = viewModel::updateDescription,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f) // Give remaining space to description
+                modifier = Modifier.fillMaxWidth()
             )
-
-            // Add some bottom padding to ensure content isn't cut off
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

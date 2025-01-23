@@ -44,13 +44,6 @@ class AddPlaceViewModel @Inject constructor(
                 categoryRepository.getAllCategories()
                     .collect { categoriesList ->
                         _categories.value = categoriesList
-
-                        // Set first category as default if available and no category is selected
-                        if (_inputState.value.categoryId == 0L) {
-                            categoriesList.firstOrNull()?.let { category ->
-                                _inputState.update { it.copy(categoryId = category.id) }
-                            }
-                        }
                     }
             } catch (e: Exception) {
                 Log.e(TAG, "Error loading categories", e)
@@ -172,14 +165,36 @@ class AddPlaceViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                Log.d(TAG, "Adding new place: ${currentState.name}")
+                // Detailed logging of all properties before saving
+                Log.d(TAG, """
+                Saving Place with details:
+                ID: ${currentState.id}
+                Name: ${currentState.name}
+                Location: (${currentState.latitude}, ${currentState.longitude})
+                Category ID: ${currentState.categoryId}
+                Description: ${currentState.description}
+                Rating: ${currentState.rating}
+                Dialog Visible: ${currentState.isLocationDialogVisible}
+                Location Error: ${currentState.locationError}
+                """.trimIndent()
+                )
+
                 _uiState.value = AddPlaceUiState.Loading
 
                 val place = currentState.toPlace()
                 val placeId = placeRepository.insertPlace(place)
 
                 if (placeId > 0) {
-                    Log.d(TAG, "Successfully added place with ID: $placeId")
+                    // Log successful save with the new ID
+                    Log.d(TAG, """
+                    Successfully saved place:
+                    New ID: $placeId
+                    Name: ${currentState.name}
+                    Category: ${currentState.categoryId}
+                    Location: (${currentState.latitude}, ${currentState.longitude})
+                    Time: ${System.currentTimeMillis()}
+                    """.trimIndent()
+                    )
                     _uiState.value = AddPlaceUiState.Success(placeId)
                 } else {
                     Log.e(TAG, "Failed to add place - invalid ID returned")
@@ -187,6 +202,14 @@ class AddPlaceViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error adding place", e)
+                // Log the error details
+                Log.e(TAG, """
+                Failed to save place with details:
+                Name: ${currentState.name}
+                Error: ${e.message}
+                Stack trace: ${e.stackTraceToString()}
+                """.trimIndent()
+                )
                 _uiState.value = AddPlaceUiState.Error(
                     e.message ?: "Unknown error occurred"
                 )

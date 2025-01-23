@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
@@ -23,22 +24,24 @@ fun RatingSelector(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(
             "Rating",
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.bodyMedium
         )
 
         Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalAlignment = Alignment.CenterVertically
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
         ) {
             repeat(5) { index ->
                 val starFilled = index < rating
                 IconButton(
-                    onClick = { onRatingChange(index + 1f) }
+                    onClick = { onRatingChange(index + 1f) },
+                    modifier = Modifier.size(36.dp)
                 ) {
                     Icon(
                         imageVector = if (starFilled) {
@@ -51,7 +54,8 @@ fun RatingSelector(
                             MaterialTheme.colorScheme.primary
                         } else {
                             MaterialTheme.colorScheme.outline
-                        }
+                        },
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             }
