@@ -1,18 +1,11 @@
 package com.example.placeKeeper.presentation.screens.places.components
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,19 +13,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -73,7 +59,7 @@ fun PlaceCard(
                     brush = Brush.verticalGradient(
                         colors = listOf(
                             MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
-                            MaterialTheme.colorScheme.surface
+                            MaterialTheme.colorScheme.primary
                         )
                     )
                 )
@@ -140,13 +126,13 @@ fun PlaceCard(
                         Icon(
                             imageVector = Icons.Outlined.LocationOn,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = MaterialTheme.colorScheme.surface,
                             modifier = Modifier.size(32.dp)
                         )
                         Text(
                             text = if (showMap) "Hide map" else "Tap to view location",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.primary,
+                            color = MaterialTheme.colorScheme.surface,
                             modifier = Modifier.padding(top = 8.dp)
                         )
                     }
@@ -168,14 +154,14 @@ fun PlaceCard(
                         maxLines = if (expandedDescription) 4 else 1,
                         overflow = TextOverflow.Ellipsis,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = MaterialTheme.colorScheme.surface,
                         modifier = Modifier.clickable { expandedDescription = !expandedDescription }
                     )
                     if (place.description.length > 100) {
                         Text(
                             text = if (expandedDescription) "Show less" else "Read more",
                             style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.primary,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier
                                 .padding(top = 2.dp)
                                 .clickable { expandedDescription = !expandedDescription }
