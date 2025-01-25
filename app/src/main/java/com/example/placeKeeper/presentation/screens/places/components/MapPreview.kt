@@ -11,7 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -21,7 +24,6 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.android.gms.maps.CameraUpdateFactory
 
 @Composable
 fun MapPreview(
@@ -49,7 +51,7 @@ fun MapPreview(
             update = CameraUpdateFactory.newCameraPosition(
                 CameraPosition.Builder()
                     .target(position)
-                    .zoom(15f)
+                    .zoom(8f)
                     .build()
             )
         )
@@ -70,7 +72,16 @@ fun MapPreview(
                 mapToolbarEnabled = false
             )
         ) {
-            Marker(state = MarkerState(position), title = "Location")
+            Marker(
+                state = MarkerState(position),
+                title = "Location",
+                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE), // Change color
+                alpha = 1f, // Transparency (0-1)
+                anchor = Offset(0.5f, 0.5f),
+                zIndex = 1f, // Layer priority
+                flat = false, // 3D appearance
+                draggable = true // Optional dragging
+            )
         }
     }
 }
