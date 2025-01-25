@@ -1,10 +1,12 @@
-package com.example.placeKeeper.presentation.screens.savedPlaces.components
+package com.example.placeKeeper.presentation.screens.places.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -25,8 +27,20 @@ import com.google.android.gms.maps.CameraUpdateFactory
 fun MapPreview(
     latitude: Double,
     longitude: Double,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isVisible: Boolean = false
 ) {
+    if (!isVisible) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(120.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+        )
+        return
+    }
+
     val position = LatLng(latitude, longitude)
     val cameraPositionState = rememberCameraPositionState()
 
@@ -41,19 +55,11 @@ fun MapPreview(
         )
     }
 
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(120.dp)
-            .clip(RoundedCornerShape(8.dp))
-    ) {
+    Box(modifier = modifier.clip(RoundedCornerShape(8.dp))) {
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
-            properties = MapProperties(
-                mapType = MapType.NORMAL,
-                isBuildingEnabled = true
-            ),
+            properties = MapProperties(mapType = MapType.NORMAL),
             uiSettings = MapUiSettings(
                 zoomControlsEnabled = false,
                 scrollGesturesEnabled = false,
@@ -64,10 +70,7 @@ fun MapPreview(
                 mapToolbarEnabled = false
             )
         ) {
-            Marker(
-                state = MarkerState(position = position),
-                title = "Location"
-            )
+            Marker(state = MarkerState(position), title = "Location")
         }
     }
 }

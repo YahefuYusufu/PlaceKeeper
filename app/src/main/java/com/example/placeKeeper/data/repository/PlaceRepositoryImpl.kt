@@ -5,7 +5,11 @@ import com.example.placeKeeper.data.mappers.toPlace
 import com.example.placeKeeper.data.mappers.toPlaceEntity
 import com.example.placeKeeper.domain.model.Place
 import com.example.placeKeeper.domain.repository.PlaceRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -13,17 +17,20 @@ class PlaceRepositoryImpl @Inject constructor(
     private val placeDao: PlaceDao
 ) : PlaceRepository {
 
-    override fun getAllPlaces(): Flow<List<Place>> {
-        return placeDao.getAllPlaces().map { entities ->
-            entities.map { it.toPlace() }
-        }
-    }
+    override fun getAllPlaces(): Flow<List<Place>> = placeDao.getAllPlaces()
+        .map { entities -> entities.map { it.toPlace() } }
+        .flowOn(Dispatchers.IO)
+        .distinctUntilChanged()
+        .conflate()
 
-    override fun getPlacesByCategory(categoryId: Long): Flow<List<Place>> {
-        return placeDao.getPlacesByCategory(categoryId).map { entities ->
-            entities.map { it.toPlace() }
-        }
-    }
+
+
+    override fun getPlacesByCategory(categoryId: Long): Flow<List<Place>> =
+        placeDao.getPlacesByCategory(categoryId)
+            .map { it.map { entity -> entity.toPlace() } }
+            .flowOn(Dispatchers.IO)
+            .distinctUntilChanged()
+            .conflate()
 
     override suspend fun getPlaceById(placeId: Long): Place? {
         return placeDao.getPlaceById(placeId)?.toPlace()

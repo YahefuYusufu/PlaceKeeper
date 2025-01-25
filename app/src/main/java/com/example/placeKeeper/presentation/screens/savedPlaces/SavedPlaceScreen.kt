@@ -17,13 +17,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.placeKeeper.presentation.screens.savedPlaces.components.PlaceCard
+import com.example.placeKeeper.presentation.screens.places.components.PlaceCard
 
 @Composable
 fun SavedPlaceScreen(
-    viewModel: SavedPlaceViewModel = hiltViewModel()
-) {
-    val places by viewModel.places.collectAsState()
+ ) {
 
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
@@ -32,16 +30,6 @@ fun SavedPlaceScreen(
             modifier = Modifier.padding(16.dp)
         )
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            items(places) { place ->
-                PlaceCard(place = place)
-            }
-        }
+
     }
 }

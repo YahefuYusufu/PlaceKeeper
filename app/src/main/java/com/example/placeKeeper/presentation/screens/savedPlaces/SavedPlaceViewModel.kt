@@ -11,19 +11,3 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-@HiltViewModel
-class SavedPlaceViewModel @Inject constructor(
-    private val repository: PlaceRepository
-
-): ViewModel() {
-    private val _places = MutableStateFlow<List<Place>>(emptyList())
-    val places = _places.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            repository.getAllPlaces().collect {places ->
-                _places.value = places
-            }
-        }
-    }
-}

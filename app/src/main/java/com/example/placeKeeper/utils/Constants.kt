@@ -12,6 +12,9 @@ import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.ui.graphics.vector.ImageVector
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 object Constants {
     // Map related
@@ -70,3 +73,7 @@ data class IconOption(
     val iconName: String,
     val displayName: String
 )
+
+fun formatDate(timestamp: Long): String {
+    return SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date(timestamp))
+}
