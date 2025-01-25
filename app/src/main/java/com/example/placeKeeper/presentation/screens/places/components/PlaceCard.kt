@@ -1,5 +1,6 @@
 package com.example.placeKeeper.presentation.screens.places.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -32,6 +35,8 @@ import com.example.placeKeeper.utils.formatDate
 @Composable
 fun PlaceCard(place: Place) {
     var showMap by remember { mutableStateOf(false) }
+    var expandedDescription by remember { mutableStateOf(false) }
+
 
     Card(
         modifier = Modifier
@@ -85,14 +90,25 @@ fun PlaceCard(place: Place) {
             }
 
             if (place.description.isNotEmpty()) {
-                Text(
-                    text = place.description,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                )
+                Column(modifier = Modifier.padding(horizontal = 8.dp)) {
+                    Text(
+                        text = place.description,
+                        maxLines = if (expandedDescription) Int.MAX_VALUE else 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .verticalScroll(rememberScrollState())
+                            .clickable { expandedDescription = !expandedDescription }
+                    )
+                    if (place.description.length > 100) {
+                        Text(
+                            text = if (expandedDescription) "Show less" else "Read more",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.clickable { expandedDescription = !expandedDescription }
+                        )
+                    }
+                }
             }
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
