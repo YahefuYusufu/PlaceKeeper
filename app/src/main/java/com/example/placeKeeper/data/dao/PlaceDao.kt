@@ -31,4 +31,18 @@ interface PlaceDao {
 
     @Query("SELECT * FROM place WHERE name LIKE '%' || :query || '%'")
     fun searchPlaces(query: String): Flow<List<PlaceEntity>>
+
+    //Fav
+    @Query("SELECT EXISTS(SELECT 1 FROM favorite_places WHERE placeId = :placeId)")
+    fun isPlaceFavorite(placeId: Long): Flow<Boolean>
+
+    @Query("INSERT INTO favorite_places (placeId) VALUES (:placeId)")
+    suspend fun addToFavorites(placeId: Long)
+
+    @Query("DELETE FROM favorite_places WHERE placeId = :placeId")
+    suspend fun removeFromFavorites(placeId: Long)
+
+    @Query("SELECT p.* FROM place p INNER JOIN favorite_places fp ON p.id = fp.placeId")
+    fun getFavoritePlaces(): Flow<List<PlaceEntity>>
+
 }

@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -53,4 +54,20 @@ class PlaceRepositoryImpl @Inject constructor(
             entities.map { it.toPlace() }
         }
     }
+
+    //fav
+    override fun isPlaceFavorite(placeId: Long): Flow<Boolean> =
+        placeDao.isPlaceFavorite(placeId)
+
+    override suspend fun toggleFavorite(placeId: Long) {
+        if (placeDao.isPlaceFavorite(placeId).first()) {
+            placeDao.removeFromFavorites(placeId)
+        } else {
+            placeDao.addToFavorites(placeId)
+        }
+    }
+
+    override fun getFavoritePlaces(): Flow<List<Place>> =
+        placeDao.getFavoritePlaces()
+            .map { entities -> entities.map { it.toPlace() } }
 }

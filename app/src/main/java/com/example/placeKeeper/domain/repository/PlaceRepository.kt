@@ -11,4 +11,9 @@ interface PlaceRepository {
     suspend fun updatePlace(place: Place)
     suspend fun deletePlace(place: Place)
     fun searchPlaces(query: String): Flow<List<Place>>
+
+    // New favorite methods
+    suspend fun toggleFavorite(placeId: Long)
+    fun getFavoritePlaces(): Flow<List<Place>>
+    fun isPlaceFavorite(placeId: Long): Flow<Boolean>
 }

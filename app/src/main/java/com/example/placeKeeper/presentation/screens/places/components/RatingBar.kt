@@ -29,7 +29,7 @@ fun RatingBar(
             Icon(
                 imageVector = if (index < rating) Icons.Filled.Star else Icons.Outlined.Star,
                 contentDescription = null,
-                tint = if (index < rating) tint else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                tint = if (index < rating) tint else MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
                 modifier = Modifier.size(16.dp)
             )
         }

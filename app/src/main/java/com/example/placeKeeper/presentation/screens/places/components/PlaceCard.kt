@@ -13,10 +13,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -41,6 +44,7 @@ fun PlaceCard(
 ) {
     var expandedDescription by remember { mutableStateOf(false) }
     var showMap by remember { mutableStateOf(false) }
+    var isFavorite by remember { mutableStateOf(false) }
 
     Card(
         modifier = modifier
@@ -67,32 +71,58 @@ fun PlaceCard(
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .background(
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(12.dp)
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
+                                MaterialTheme.colorScheme.primary
+                            )
+                        )
                     )
-                    .padding(horizontal = 6.dp, vertical = 4.dp),
+                    .padding(6.dp)
             ) {
-                Text(
-                    text = place.name,
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight.SemiBold
-                    ),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Row(
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                        .fillMaxWidth()
+                        .background(
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .padding(horizontal = 6.dp, vertical = 4.dp),
                 ) {
-                    RatingBar(rating = place.rating)
-                    Text(
-                        text = formatDate(place.createdAt),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = place.name,
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                fontWeight = FontWeight.SemiBold
+                            ),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        IconButton(onClick = { isFavorite = !isFavorite }) {
+                            Icon(
+                                imageVector = Icons.Filled.Favorite,
+                                contentDescription = "Favorite",
+                                tint = if (isFavorite) Color.Red else Color.White
+                            )
+                        }
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RatingBar(rating = place.rating)
+                        Text(
+                            text = formatDate(place.createdAt),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
 
@@ -147,7 +177,7 @@ fun PlaceCard(
                             color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
                             shape = RoundedCornerShape(12.dp)
                         )
-                        .padding(6.dp)
+                        .padding(8.dp)
                 ) {
                     Text(
                         text = place.description,
@@ -161,7 +191,7 @@ fun PlaceCard(
                         Text(
                             text = if (expandedDescription) "Show less" else "Read more",
                             style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            color = MaterialTheme.colorScheme.inversePrimary,
                             modifier = Modifier
                                 .padding(top = 2.dp)
                                 .clickable { expandedDescription = !expandedDescription }
