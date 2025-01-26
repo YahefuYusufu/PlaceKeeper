@@ -24,7 +24,9 @@ object DatabaseModule {
             context,
             PlaceDatabase::class.java,
             "place_database"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides
@@ -36,4 +38,4 @@ object DatabaseModule {
     fun provideCategoryDao(database: PlaceDatabase): CategoryDao {
         return database.categoryDao()
     }
-}
+ }
