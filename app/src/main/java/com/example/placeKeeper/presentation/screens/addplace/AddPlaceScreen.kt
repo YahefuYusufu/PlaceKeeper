@@ -106,7 +106,7 @@ fun AddPlaceScreen(
                 onLocationEvent = viewModel::onLocationEvent,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
+                    .height(290.dp)
             )
 
             // Name and Category in the same row

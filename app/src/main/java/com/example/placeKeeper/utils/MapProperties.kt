@@ -1,25 +1,33 @@
 
 package com.example.placeKeeper.utils
 
-object MapProperties {
-    // Default camera position (you can modify these coordinates)
-    const val DEFAULT_LATITUDE = 0.0
-    const val DEFAULT_LONGITUDE = 0.0
-    const val DEFAULT_ZOOM = 15f
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapType
+import com.google.maps.android.compose.MapUiSettings
 
-    // Map UI settings
-    val defaultMapUiSettings = mapOf(
-        "isZoomControlsEnabled" to false,      // We'll add custom controls
-        "isCompassEnabled" to true,
-        "isMyLocationButtonEnabled" to false,  // We'll add custom location button
-        "isMapToolbarEnabled" to false
+object MapUtils {
+    fun defaultProperties(
+        isMyLocationEnabled: Boolean,
+        mapType: MapType = MapType.NORMAL,
+    ) = MapProperties(
+        isMyLocationEnabled = isMyLocationEnabled,
+        mapType = mapType,
+        minZoomPreference = 3f,
+        maxZoomPreference = 20f,
+        isBuildingEnabled = true
     )
 
-    // Map types
-    enum class MapType {
-        NORMAL,
-        SATELLITE,
-        TERRAIN,
-        HYBRID
-    }
+    fun defaultUiSettings(
+        showZoomControls: Boolean = true,
+        showCompass: Boolean = true
+    ) = MapUiSettings(
+        zoomControlsEnabled = showZoomControls,
+        myLocationButtonEnabled = false,
+        compassEnabled = showCompass,
+        scrollGesturesEnabled = true,
+        scrollGesturesEnabledDuringRotateOrZoom = true,
+        rotationGesturesEnabled = true,
+        tiltGesturesEnabled = true,
+        zoomGesturesEnabled = true
+    )
 }
