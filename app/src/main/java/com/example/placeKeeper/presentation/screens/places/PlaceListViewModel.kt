@@ -3,17 +3,14 @@ package com.example.placeKeeper.presentation.screens.places
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.placeKeeper.domain.model.Place
 import com.example.placeKeeper.domain.repository.PlaceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -46,19 +43,7 @@ class PlaceListViewModel @Inject constructor(
         }
     }
 
-    fun toggleFavorite(placeId: Long) {
-        viewModelScope.launch {
-            repository.toggleFavorite(placeId)
-        }
-    }
 
-    val isFavorite = { placeId: Long ->
-        repository.isPlaceFavorite(placeId).stateIn(
-            viewModelScope,
-            SharingStarted.Lazily,
-            false
-        )
-    }
 
     fun deletePlace(place: Place) {
         viewModelScope.launch {

@@ -1,6 +1,7 @@
 package com.example.placeKeeper.data.repository
 
 import com.example.placeKeeper.data.dao.PlaceDao
+import com.example.placeKeeper.data.entities.FavoritePlaceEntity
 import com.example.placeKeeper.data.mappers.toPlace
 import com.example.placeKeeper.data.mappers.toPlaceEntity
 import com.example.placeKeeper.domain.model.Place
@@ -18,20 +19,14 @@ class PlaceRepositoryImpl @Inject constructor(
     private val placeDao: PlaceDao
 ) : PlaceRepository {
 
-    override fun getAllPlaces(): Flow<List<Place>> = placeDao.getAllPlaces()
-        .map { entities -> entities.map { it.toPlace() } }
-        .flowOn(Dispatchers.IO)
-        .distinctUntilChanged()
-        .conflate()
-
+    override fun getAllPlaces(): Flow<List<Place>> =
+        placeDao.getAllPlaces().map { entities -> entities.map { it.toPlace() } }
+            .flowOn(Dispatchers.IO).distinctUntilChanged().conflate()
 
 
     override fun getPlacesByCategory(categoryId: Long): Flow<List<Place>> =
-        placeDao.getPlacesByCategory(categoryId)
-            .map { it.map { entity -> entity.toPlace() } }
-            .flowOn(Dispatchers.IO)
-            .distinctUntilChanged()
-            .conflate()
+        placeDao.getPlacesByCategory(categoryId).map { it.map { entity -> entity.toPlace() } }
+            .flowOn(Dispatchers.IO).distinctUntilChanged().conflate()
 
     override suspend fun getPlaceById(placeId: Long): Place? {
         return placeDao.getPlaceById(placeId)?.toPlace()
@@ -56,18 +51,16 @@ class PlaceRepositoryImpl @Inject constructor(
     }
 
     //fav
-    override fun isPlaceFavorite(placeId: Long): Flow<Boolean> =
-        placeDao.isPlaceFavorite(placeId)
+    override fun isPlaceFavorite(placeId: Long): Flow<Boolean> = placeDao.isPlaceFavorite(placeId)
 
     override suspend fun toggleFavorite(placeId: Long) {
         if (placeDao.isPlaceFavorite(placeId).first()) {
             placeDao.removeFromFavorites(placeId)
         } else {
-            placeDao.addToFavorites(placeId)
+            placeDao.addToFavorites(FavoritePlaceEntity(placeId = placeId))
         }
     }
 
     override fun getFavoritePlaces(): Flow<List<Place>> =
-        placeDao.getFavoritePlaces()
-            .map { entities -> entities.map { it.toPlace() } }
+        placeDao.getFavoritePlaces().map { entities -> entities.map { it.toPlace() } }
 }

@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.example.placeKeeper.data.entities.FavoritePlaceEntity
 import com.example.placeKeeper.data.entities.PlaceEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -32,12 +33,12 @@ interface PlaceDao {
     @Query("SELECT * FROM place WHERE name LIKE '%' || :query || '%'")
     fun searchPlaces(query: String): Flow<List<PlaceEntity>>
 
-    //Fav
+    // Updated favorite queries
     @Query("SELECT EXISTS(SELECT 1 FROM favorite_places WHERE placeId = :placeId)")
     fun isPlaceFavorite(placeId: Long): Flow<Boolean>
 
-    @Query("INSERT INTO favorite_places (placeId) VALUES (:placeId)")
-    suspend fun addToFavorites(placeId: Long)
+    @Insert
+    suspend fun addToFavorites(favorite: FavoritePlaceEntity)
 
     @Query("DELETE FROM favorite_places WHERE placeId = :placeId")
     suspend fun removeFromFavorites(placeId: Long)

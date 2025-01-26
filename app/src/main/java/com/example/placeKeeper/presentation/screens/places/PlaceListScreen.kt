@@ -27,6 +27,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,11 +46,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.placeKeeper.domain.model.Place
 import com.example.placeKeeper.presentation.screens.places.components.PlaceCard
+import com.example.placeKeeper.presentation.screens.savedPlaces.SavedPlaceViewModel
 
 @Composable
 fun PlacesListScreen(
-    viewModel: PlaceListViewModel = hiltViewModel()
-) {
+    viewModel: PlaceListViewModel = hiltViewModel(),
+    savedViewModel: SavedPlaceViewModel = hiltViewModel(),
+
+    ) {
     val uiState by viewModel.places.collectAsStateWithLifecycle()
     var selectedView by remember { mutableStateOf(ViewType.GRID) }
 
@@ -158,9 +162,16 @@ fun PlacesListScreen(
                 when (selectedView) {
                     ViewType.GRID -> PlacesGrid(
                         places = places,
-                        onDelete = { place -> viewModel.deletePlace(place)}
+                        onDelete = viewModel::deletePlace,
+                        onFavoriteToggle = savedViewModel::toggleFavorite,
+                        getIsFavorite = { id -> savedViewModel.isFavorite(id).collectAsStateWithLifecycle() }
                     )
-                    ViewType.LIST -> PlacesList(places = places)
+                    ViewType.LIST -> PlacesList(
+                        places = places,
+                        onDelete = viewModel::deletePlace,
+                        onFavoriteToggle = savedViewModel::toggleFavorite,
+                        getIsFavorite = { id -> savedViewModel.isFavorite(id).collectAsStateWithLifecycle() }
+                    )
                 }
             }
         }
@@ -170,7 +181,9 @@ fun PlacesListScreen(
 @Composable
 private fun PlacesGrid(
     places: List<Place>,
-    onDelete: (Place) -> Unit
+    onDelete: (Place) -> Unit,
+    onFavoriteToggle: (Long) -> Unit,
+    getIsFavorite: @Composable (Long) -> State<Boolean>
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -182,21 +195,33 @@ private fun PlacesGrid(
         items(places) { place ->
             PlaceCard(
                 place = place,
-                onDelete = onDelete
+                onDelete = onDelete,
+                onFavoriteToggle = onFavoriteToggle,
+                isFavorite = getIsFavorite(place.id)
             )
         }
     }
 }
 
 @Composable
-private fun PlacesList(places: List<Place>) {
+private fun PlacesList(
+    places: List<Place>,
+    onDelete: (Place) -> Unit,
+    onFavoriteToggle: (Long) -> Unit,
+    getIsFavorite: @Composable (Long) -> State<Boolean>
+) {
     LazyColumn(
         contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         items(places) { place ->
-            PlaceCard(place = place)
+            PlaceCard(
+                place = place,
+                onDelete = onDelete,
+                onFavoriteToggle = onFavoriteToggle,
+                isFavorite = getIsFavorite(place.id)
+            )
         }
     }
 }

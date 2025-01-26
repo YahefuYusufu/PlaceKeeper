@@ -25,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,11 +46,12 @@ import com.example.placeKeeper.utils.formatDate
 fun PlaceCard(
     place: Place,
     modifier: Modifier = Modifier,
-    onDelete: (Place) -> Unit = {}
+    onDelete: (Place) -> Unit = {},
+    onFavoriteToggle: (Long) -> Unit = {},
+    isFavorite: State<Boolean>
 ) {
     var expandedDescription by remember { mutableStateOf(false) }
     var showMap by remember { mutableStateOf(false) }
-    var isFavorite by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     if (showDeleteDialog) {
@@ -137,11 +139,11 @@ fun PlaceCard(
                             ),
                             color = MaterialTheme.colorScheme.onSurface
                         )
-                        IconButton(onClick = { isFavorite = !isFavorite }) {
+                        IconButton(onClick = { onFavoriteToggle(place.id) }) {
                             Icon(
                                 imageVector = Icons.Filled.Favorite,
                                 contentDescription = "Favorite",
-                                tint = if (isFavorite) Color.Red else Color.White
+                                tint = if (isFavorite.value) Color.Red else Color.White
                             )
                         }
                     }
