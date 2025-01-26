@@ -60,12 +60,7 @@ fun PlaceCard(
             title = { Text("Delete Place") },
             text = { Text("Are you sure you want to delete ${place.name}?") },
             confirmButton = {
-                TextButton(
-                    onClick = {
-                        onDelete(place)
-                        showDeleteDialog = false
-                    }
-                ) {
+                TextButton(onClick = { onDelete(place); showDeleteDialog = false }) {
                     Text("Delete")
                 }
             },
@@ -83,14 +78,10 @@ fun PlaceCard(
             .height(380.dp)
             .padding(vertical = 8.dp)
             .pointerInput(Unit) {
-                detectTapGestures(
-                    onLongPress = { showDeleteDialog = true }
-                )
+                detectTapGestures(onLongPress = { showDeleteDialog = true })
             },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
             modifier = Modifier
@@ -105,63 +96,51 @@ fun PlaceCard(
                 )
                 .padding(6.dp)
         ) {
+            // Header section
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
                     .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
-                                MaterialTheme.colorScheme.primary
-                            )
-                        )
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                        shape = RoundedCornerShape(12.dp)
                     )
-                    .padding(6.dp)
+                    .padding(horizontal = 6.dp, vertical = 4.dp),
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                        .padding(horizontal = 6.dp, vertical = 4.dp),
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = place.name,
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontWeight = FontWeight.SemiBold
-                            ),
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        IconButton(onClick = { onFavoriteToggle(place.id) }) {
-                            Icon(
-                                imageVector = Icons.Filled.Favorite,
-                                contentDescription = "Favorite",
-                                tint = if (isFavorite.value) Color.Red else Color.White
-                            )
-                        }
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RatingBar(rating = place.rating)
-                        Text(
-                            text = formatDate(place.createdAt),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                    Text(
+                        text = place.name,
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.SemiBold
+                        ),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    IconButton(onClick = { onFavoriteToggle(place.id) }) {
+                        Icon(
+                            imageVector = Icons.Filled.Favorite,
+                            contentDescription = "Favorite",
+                            tint = if (isFavorite.value) Color.Red else Color.White
                         )
                     }
                 }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RatingBar(rating = place.rating)
+                    Text(
+                        text = formatDate(place.createdAt),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
 
+            // Map section
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -205,6 +184,7 @@ fun PlaceCard(
                 }
             }
 
+            // Description section
             if (place.description.isNotEmpty()) {
                 Column(
                     modifier = Modifier
