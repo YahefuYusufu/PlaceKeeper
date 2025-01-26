@@ -156,7 +156,10 @@ fun PlacesListScreen(
                 val places =
                     (uiState as UiState.Success<List<Place>>).data.sortedByDescending { it.createdAt }
                 when (selectedView) {
-                    ViewType.GRID -> PlacesGrid(places = places)
+                    ViewType.GRID -> PlacesGrid(
+                        places = places,
+                        onDelete = { place -> viewModel.deletePlace(place)}
+                    )
                     ViewType.LIST -> PlacesList(places = places)
                 }
             }
@@ -165,7 +168,10 @@ fun PlacesListScreen(
 }
 
 @Composable
-private fun PlacesGrid(places: List<Place>) {
+private fun PlacesGrid(
+    places: List<Place>,
+    onDelete: (Place) -> Unit
+) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(8.dp),
@@ -174,7 +180,10 @@ private fun PlacesGrid(places: List<Place>) {
         modifier = Modifier.fillMaxWidth()
     ) {
         items(places) { place ->
-            PlaceCard(place = place)
+            PlaceCard(
+                place = place,
+                onDelete = onDelete
+            )
         }
     }
 }

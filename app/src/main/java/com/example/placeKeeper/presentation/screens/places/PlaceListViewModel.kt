@@ -3,6 +3,7 @@ package com.example.placeKeeper.presentation.screens.places
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.placeKeeper.domain.model.Place
 import com.example.placeKeeper.domain.repository.PlaceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -57,5 +58,11 @@ class PlaceListViewModel @Inject constructor(
             SharingStarted.Lazily,
             false
         )
+    }
+
+    fun deletePlace(place: Place) {
+        viewModelScope.launch {
+            repository.deletePlace(place)
+        }
     }
 }
