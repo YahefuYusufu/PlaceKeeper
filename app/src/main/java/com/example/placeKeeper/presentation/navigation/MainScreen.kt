@@ -1,14 +1,23 @@
 package com.example.placeKeeper.presentation.navigation
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.navigation.compose.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
 import com.example.placeKeeper.presentation.navigation.components.PlaceKeeperBottomNavigation
+import com.example.placeKeeper.presentation.screens.addplace.AddPlaceBottomSheet
 import com.example.placeKeeper.presentation.screens.addplace.components.AddPlaceButton
 
 @Composable
@@ -20,6 +29,8 @@ fun MainScreen() {
         NavigationItem.PlacesList,
         NavigationItem.Saved
     )
+    var showAddPlaceSheet by remember { mutableStateOf(false) }
+
 
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
@@ -47,6 +58,7 @@ fun MainScreen() {
                     )
                 }
 
+
                 // Add Button
                 Box(
                     modifier = Modifier
@@ -55,12 +67,18 @@ fun MainScreen() {
                         .zIndex(1f)
                 ) {
                     AddPlaceButton(
-                        onClick = {
-                            navController.navigate(Routes.ADD_PLACE)
-                        }
+                        onClick = { showAddPlaceSheet = true }
                     )
                 }
             }
         }
+
+        // Bottom Sheet
+        if (showAddPlaceSheet) {
+            AddPlaceBottomSheet(
+                onDismiss = { showAddPlaceSheet = false }
+            )
+        }
     }
 }
+
