@@ -33,16 +33,22 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.placeKeeper.presentation.screens.addplace.AddPlaceInputState
 import com.example.placeKeeper.presentation.screens.addplace.AddPlaceViewModel
 import com.example.placeKeeper.presentation.screens.addplace.LocationEvent
-import com.example.placeKeeper.utils.MapUtils
 import com.example.placeKeeper.utils.PermissionUtils
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapType
+import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
-
+ import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+ import androidx.compose.runtime.setValue
+import com.google.maps.android.compose.DragState
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberMarkerState
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -66,31 +72,34 @@ fun LocationSection(
     val selectedPosition = if (state.latitude != 0.0 && state.longitude != 0.0) {
         LatLng(state.latitude, state.longitude)
     } else {
-        LatLng(-6.200000, 106.816666)
+        LatLng(48.8566, 2.3522) // Paris coordinates
     }
 
+    val markerState = rememberMarkerState(position = selectedPosition)
+
+    // Camera position state
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.Builder()
             .target(selectedPosition)
-            .zoom(8f)
-            .bearing(0f)
-            .tilt(0f)
+            .zoom(12f)
             .build()
     }
 
+    // Update marker position when state changes
     LaunchedEffect(state.latitude, state.longitude) {
         if (state.latitude != 0.0 && state.longitude != 0.0) {
-            val newPosition = LatLng(state.latitude, state.longitude)
-            cameraPositionState.animate(
-                update = CameraUpdateFactory.newCameraPosition(
-                    CameraPosition.Builder()
-                        .target(newPosition)
-                        .zoom(12f)
-                        .bearing(0f)
-                        .tilt(0f)
-                        .build()
-                ),
-                durationMs = 500
+            markerState.position = LatLng(state.latitude, state.longitude)
+        }
+    }
+
+    // Update location when marker position changes
+    LaunchedEffect(markerState.position) {
+        if (markerState.position != selectedPosition) {
+            onLocationEvent(
+                LocationEvent.UpdateLocation(
+                    markerState.position.latitude,
+                    markerState.position.longitude
+                )
             )
         }
     }
@@ -112,33 +121,35 @@ fun LocationSection(
                 GoogleMap(
                     modifier = Modifier.fillMaxSize(),
                     cameraPositionState = cameraPositionState,
-                    properties = MapUtils.defaultProperties(locationPermissionGranted),
-                    uiSettings = MapUtils.defaultUiSettings(),
+                    properties = MapProperties(
+                        isMyLocationEnabled = locationPermissionGranted,
+                        mapType = MapType.NORMAL,
+                        isIndoorEnabled = true
+                    ),
+                    uiSettings = MapUiSettings(
+                        zoomControlsEnabled = true,
+                        zoomGesturesEnabled = true,
+                        scrollGesturesEnabled = true,
+                        scrollGesturesEnabledDuringRotateOrZoom = true,
+                        rotationGesturesEnabled = true,
+                        tiltGesturesEnabled = true,
+                        compassEnabled = true,
+                        mapToolbarEnabled = true
+                    ),
                     onMapClick = { latLng ->
-                        onLocationEvent(
-                            LocationEvent.UpdateLocation(
-                                latLng.latitude,
-                                latLng.longitude
-                            )
-                        )
-                    },
-                    onPOIClick = { poi ->
-                        onLocationEvent(
-                            LocationEvent.UpdateLocation(
-                                poi.latLng.latitude,
-                                poi.latLng.longitude
-                            )
-                        )
+                        markerState.position = latLng
                     }
                 ) {
-                    if (state.latitude != 0.0 && state.longitude != 0.0) {
-                        Marker(
-                            state = MarkerState(position = selectedPosition),
-                            title = "Selected Location"
-                        )
-                    }
+                    // Main draggable marker
+                    Marker(
+                        state = markerState,
+                        title = "Selected Location",
+                        snippet = "Drag to adjust location",
+                        draggable = true
+                    )
                 }
 
+                // Location button
                 Row(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -165,6 +176,21 @@ fun LocationSection(
                         )
                     }
                 }
+
+                // Instructions text
+                Text(
+                    text = "Click and drag the marker to set location",
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 16.dp)
+                        .background(
+                            MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                            RoundedCornerShape(8.dp)
+                        )
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
         }
 
@@ -191,7 +217,4 @@ fun LocationSection(
             )
         }
     }
-
 }
-
-

@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -17,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -39,6 +42,20 @@ fun AddPlaceBottomSheet(
     val inputState by viewModel.inputState.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
     val categories by viewModel.categories.collectAsState()
+
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is AddPlaceUiState.Success -> {
+                // Dismiss the bottom sheet on successful save
+                onDismiss()
+                viewModel.resetState()
+            }
+            is AddPlaceUiState.Error -> {
+                // Handle error if needed
+            }
+            else -> { /* Handle other states if needed */ }
+        }
+    }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -67,11 +84,18 @@ fun AddPlaceBottomSheet(
                     enabled = inputState.name.isNotBlank() &&
                             uiState !is AddPlaceUiState.Loading
                 ) {
-                    Text("Save")
+                    if (uiState is AddPlaceUiState.Loading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp),
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text("Save")
+                    }
                 }
             }
 
-            // Map
+            // Rest of your existing bottom sheet content...
             LocationSection(
                 state = inputState,
                 onLocationEvent = viewModel::onLocationEvent,
@@ -80,7 +104,6 @@ fun AddPlaceBottomSheet(
                     .height(250.dp)
             )
 
-            // Name and Category
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -113,7 +136,6 @@ fun AddPlaceBottomSheet(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // Add extra padding at the bottom for better UX
             Spacer(modifier = Modifier.height(32.dp))
         }
     }
